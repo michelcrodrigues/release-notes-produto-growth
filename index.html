@@ -954,6 +954,88 @@ body {
 </head>
 <body>
 
+<!-- ── PASSWORD GATE ── -->
+<div id="pw-gate" style="
+  position:fixed;inset:0;z-index:9999;
+  background:#19398A;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Nunito Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+">
+  <div style="
+    background:#ffffff;border-radius:16px;
+    padding:40px 44px;width:100%;max-width:360px;
+    box-shadow:0 8px 40px rgba(0,0,0,0.28);
+    display:flex;flex-direction:column;align-items:center;gap:0;
+  ">
+    <div style="width:44px;height:44px;border-radius:12px;background:#19398A;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <div style="font-size:16px;font-weight:700;color:#1a1a18;margin-bottom:4px;">Produto Growth</div>
+    <div style="font-size:12px;color:#6b6b67;margin-bottom:24px;">Release Notes · Acesso restrito</div>
+    <input
+      id="pw-input"
+      type="password"
+      placeholder="Senha de acesso"
+      autocomplete="current-password"
+      style="
+        width:100%;padding:10px 14px;border-radius:8px;
+        border:1.5px solid #D0D0D0;font-size:14px;
+        font-family:inherit;outline:none;
+        transition:border-color .15s;
+        margin-bottom:8px;
+      "
+      oninput="document.getElementById('pw-err').style.display='none'"
+      onkeydown="if(event.key==='Enter')pwCheck()"
+    />
+    <div id="pw-err" style="display:none;font-size:11.5px;color:#E24B4A;margin-bottom:8px;align-self:flex-start;">Senha incorreta. Tente novamente.</div>
+    <button
+      onclick="pwCheck()"
+      style="
+        width:100%;padding:10px;border-radius:8px;
+        background:#19398A;color:#fff;
+        font-size:13px;font-weight:700;font-family:inherit;
+        border:none;cursor:pointer;
+        transition:background .15s;
+      "
+      onmouseover="this.style.background='#1a4aab'"
+      onmouseout="this.style.background='#19398A'"
+    >Entrar</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const HASH = "3e15580d39163926cfca6a7e6e7740958bcc82784e95331e5ac8c096c022758d";
+  async function sha256(str){
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  window.pwCheck = async function(){
+    const val = document.getElementById('pw-input').value;
+    const h = await sha256(val);
+    if(h === HASH){
+      document.getElementById('pw-gate').style.display='none';
+      sessionStorage.setItem('rn-auth','1');
+    } else {
+      document.getElementById('pw-err').style.display='block';
+      document.getElementById('pw-input').focus();
+    }
+  };
+  // Focus automático
+  window.addEventListener('DOMContentLoaded',()=>{
+    const inp = document.getElementById('pw-input');
+    if(inp) inp.focus();
+  });
+  // Verificar se já autenticado nesta sessão
+  if(sessionStorage.getItem('rn-auth')==='1'){
+    document.getElementById('pw-gate').style.display='none';
+  }
+})();
+</script>
+<!-- ── /PASSWORD GATE ── -->
+
 <div id="tb">
   <div class="brand"><div id="bdot" style="background: rgb(29, 158, 117);"></div>Produto Growth · Release Notes</div>
   <nav id="tnav">
