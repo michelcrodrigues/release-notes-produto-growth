@@ -1026,10 +1026,25 @@ const _SB_URL = 'https://ddspskifskoqznemxuuu.supabase.co';
 const _SB_KEY = 'sb_publishable_zY82pfmfz7OuD-RjLrEngA_cUzm7bVH';
 const _sb = supabase.createClient(_SB_URL, _SB_KEY);
 
+async function loadReleaseNotesData(){
+  try {
+    const res = await _sb.from('release_notes_data').select('data').eq('id','main').single();
+    if(res.error) throw res.error;
+    window.DATA = res.data.data;
+    DATA = res.data.data;
+    Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
+    setColor(team); buildSB(); renderHome();
+  } catch(err) {
+    console.error('Erro ao carregar dados do Supabase:', err);
+    document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
+  }
+}
+
 (async function(){
   const { data: { session } } = await _sb.auth.getSession();
   if(session){
     document.getElementById('pw-gate').style.display = 'none';
+    loadReleaseNotesData();
     return;
   }
 
@@ -1058,6 +1073,7 @@ const _sb = supabase.createClient(_SB_URL, _SB_KEY);
     });
 
     document.getElementById('pw-gate').style.display = 'none';
+    loadReleaseNotesData();
   };
 
   window.addEventListener('DOMContentLoaded', () => {
@@ -2853,20 +2869,6 @@ async function downloadHTML(){
 
 </script>
 
-<script>
-(async function(){
-  try {
-    const res = await _sb.from('release_notes_data').select('data').eq('id','main').single();
-    if(res.error) throw res.error;
-    window.DATA = res.data.data;
-    DATA = res.data.data;
-    Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
-    setColor(team); buildSB(); renderHome();
-  } catch(err) {
-    console.error('Erro ao carregar dados do Supabase:', err);
-    document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
-  }
-})();
-</script>
+
 
 </body></html>
