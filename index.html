@@ -2818,8 +2818,14 @@ function renderYear(yr){
 }
 
 // ── Persistência ─────────────────────────────────────────────
-function saveData(){
-  try { window.storage.set('release-notes-data', JSON.stringify(DATA)); } catch(e){}
+async function saveData(){
+  try {
+    await _sb.from('release_notes_data').upsert({
+      id: 'main',
+      data: DATA,
+      updated_at: new Date().toISOString()
+    });
+  } catch(e){ console.warn('saveData:', e); }
 }
 
 async function downloadHTML(){
@@ -2848,18 +2854,19 @@ async function downloadHTML(){
 </script>
 
 <script>
-  fetch('release-notes-data.json?v=' + Date.now())
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      window.DATA = data;
-      DATA = data;
-      Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
-      setColor(team); buildSB(); renderHome();
-    })
-    .catch(function(err) {
-      console.error('Erro ao carregar release-notes-data.json:', err);
-      document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
-    });
+(async function(){
+  try {
+    const res = await _sb.from('release_notes_data').select('data').eq('id','main').single();
+    if(res.error) throw res.error;
+    window.DATA = res.data.data;
+    DATA = res.data.data;
+    Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
+    setColor(team); buildSB(); renderHome();
+  } catch(err) {
+    console.error('Erro ao carregar dados do Supabase:', err);
+    document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
+  }
+})();
 </script>
 
 </body></html>
