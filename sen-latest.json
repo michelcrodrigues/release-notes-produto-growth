@@ -1,0 +1,68 @@
+{
+  "semana": "2026-06-07",
+  "deliveries": [
+    {
+      "id": "SEN-379",
+      "title": "Site — Rodapé renderizado server-side para indexação imediata por buscadores",
+      "labels": [
+        "Web",
+        "SEO"
+      ],
+      "project": "Implementação SEO",
+      "description": "Estrutura de links e dados do rodapé agora compilada diretamente no HTML pelo servidor. Elimina atraso de descoberta de links por robôs de busca."
+    },
+    {
+      "id": "SEN-356",
+      "title": "Totem — Correção de trava no fluxo Pix que bloqueava outros meios de pagamento",
+      "labels": [
+        "Bug",
+        "Totem"
+      ],
+      "description": "Bug urgente resolvido: o sistema não bloqueia mais os demais métodos antes da geração do QR Code, eliminando estado inconsistente que travava o checkout."
+    },
+    {
+      "id": "SEN-353",
+      "title": "Totem — Erros de confirmação de reserva tratados com mensagem e ação de recuperação",
+      "labels": [
+        "Totem"
+      ],
+      "description": "Erros da Smart API no fechamento da compra agora exibem mensagem clara e orientação de retry, evitando abandono sem contexto."
+    },
+    {
+      "id": "SEN-361",
+      "title": "Site/App — Validação de disponibilidade de assento por tipo de passageiro antes da seleção",
+      "labels": [
+        "technical-task"
+      ],
+      "description": "Tela de seleção de assento valida disponibilidade por tipo de passageiro antes de exibir o mapa, prevenindo seleção inválida."
+    },
+    {
+      "id": "SEN-359",
+      "title": "Site/App — Redirecionamento automático para busca quando tipo de passageiro não tem assentos",
+      "labels": [
+        "technical-task"
+      ],
+      "description": "Usuário com tipo de passageiro sem disponibilidade é redirecionado para busca com orientação clara, eliminando estado de erro sem saída."
+    }
+  ],
+  "highlights": [
+    {
+      "desc": "Primeira versão das telas liberada para testes — progresso saltou de 25% para 41% na semana. Plano de rollout em construção.",
+      "title": "Redesign de checkout avança para testes no site"
+    },
+    {
+      "desc": "Resolvidos: trava no fluxo de Pix antes da geração do QR Code e erros de confirmação de reserva da Smart API — ambos causavam abandono silencioso no checkout.",
+      "title": "Dois bugs críticos no totem corrigidos"
+    },
+    {
+      "desc": "Análise completa das variações de conversão documentada e compartilhada. Base para priorização de ações de CRO nas próximas semanas.",
+      "title": "Diagnóstico de conversão entregue"
+    },
+    {
+      "desc": "Dezenas de links internos no rodapé passam a ser entregues no HTML inicial, acelerando rastreamento e indexação por buscadores.",
+      "type": "result",
+      "title": "SEO: rodapé do site agora renderizado server-side"
+    }
+  ],
+  "alerts": []
+}
