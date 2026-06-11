@@ -2789,11 +2789,13 @@ function renderWeek(w){
 
     <div id="we-export-anchor"></div>
 
+`; // closes innerHTML template literal (edit mode)
+} // closes renderWeek()
 
 // ── Auth & Data Loading ──────────────────────────────────────
-// Moved here (after all globals are defined) to avoid microtask race condition:
-// Supabase resolves getSession() from localStorage as a microtask, which could
-// resume the IIFE before subsequent <script> blocks execute and define rmDep etc.
+// Defined here (after all globals) to avoid microtask race condition:
+// Supabase can resolve getSession() from localStorage as a microtask,
+// which would resume the IIFE before subsequent <script> blocks execute.
 
 async function loadReleaseNotesData(){
   try {
