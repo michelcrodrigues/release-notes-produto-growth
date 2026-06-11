@@ -657,6 +657,75 @@ body {
 .tt-name { font-weight: 500; margin-bottom: 2px; }
 .tt-deps { font-size: 11px; color: var(--text-secondary); }
 
+/* ── WEEK TABS (Visão Executiva / Release Notes) ── */
+.wk-tabs {
+  display: inline-flex; gap: 2px; margin-bottom: 22px;
+  background: var(--bg-secondary); border-radius: 10px; padding: 3px;
+  border: 0.5px solid var(--border);
+}
+.wk-tab {
+  font-size: 12.5px; font-weight: 600; padding: 7px 20px; border-radius: 8px;
+  border: none; background: transparent; color: var(--text-secondary);
+  cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap;
+}
+.wk-tab:hover { color: var(--text-primary); background: rgba(0,0,0,0.04); }
+.wk-tab.on {
+  background: var(--bg-primary); color: var(--act);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+}
+/* Painéis de conteúdo da semana */
+.wk-panel { animation: wkFadeIn .15s ease; }
+@keyframes wkFadeIn { from { opacity:0; transform:translateY(3px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── Visão Executiva — estilo diferenciado ── */
+.exec-section-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--text-secondary);
+  margin: 20px 0 8px; display: flex; align-items: center; gap: 8px;
+}
+.exec-section-label::after {
+  content: ""; flex: 1; height: 0.5px; background: var(--border);
+}
+.exec-kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px; margin-bottom: 20px;
+}
+.exec-kpi {
+  background: var(--bg-primary); border-radius: 12px; padding: 14px 16px;
+  border: 0.5px solid var(--border);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.exec-kpi-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 5px; font-weight: 500; }
+.exec-kpi-value { font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+.exec-kpi-delta { font-size: 11px; margin-top: 4px; font-weight: 600; }
+.exec-kpi-delta.up   { color: var(--green); }
+.exec-kpi-delta.down { color: var(--red); }
+.exec-kpi-delta.flat { color: var(--text-secondary); }
+
+/* Highlights executivos */
+.exec-hl-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.exec-hl-item {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--bg-primary); border: 0.5px solid var(--border);
+  border-radius: 10px; padding: 13px 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.exec-hl-item.result {
+  border-left: 3px solid var(--green); background: #F6FCF9;
+}
+.exec-hl-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.exec-hl-body { flex: 1; }
+.exec-hl-title { font-size: 13.5px; font-weight: 600; color: var(--text-primary); line-height: 1.4; margin-bottom: 2px; }
+.exec-hl-desc  { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+/* ── Release Notes — seção de entregas ── */
+.rn-section-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--text-secondary);
+  margin: 20px 0 8px; display: flex; align-items: center; gap: 8px;
+}
+.rn-section-label::after { content: ""; flex: 1; height: 0.5px; background: var(--border); }
+
 /* ── DEMOS & MARCOS ── */
 /* Sidebar — seção de demos */
 .demo-sb-header {
@@ -1757,11 +1826,17 @@ function dlvCard(d,wl){
   return`<div class="dlv"><div class="db"><div class="dt">${esc(d.title)}${idBadge}</div>${d.description?`<div class="dd">${esc(d.description)}</div>`:""}<div class="dm">${lb}${wk}</div></div></div>`;
 }
 
-function renderProjectUpdates(projectUpdates){
-  const pu=projectUpdates||[];
+// filter: 'exec' = só executivos | 'rn' = só não-executivos | 'all' (default)
+function renderProjectUpdates(projectUpdates, filter){
+  filter = filter||'all';
+  let pu=projectUpdates||[];
+  if(!pu.length) return'';
+  const isExecFn=u=>(u.labels||[]).map(l=>l.toLowerCase()).includes('executivo');
+  if(filter==='exec') pu=pu.filter(u=>isExecFn(u));
+  if(filter==='rn')   pu=pu.filter(u=>!isExecFn(u));
   if(!pu.length) return'';
 
-  const isExec=u=>(u.labels||[]).map(l=>l.toLowerCase()).includes('executivo');
+  const isExec=isExecFn;
 
   // Saúde do update → classe de cor no card
   const healthCls=st=>st==='on_track'?'pu-ok':st==='at_risk'?'pu-warn':st==='off_track'?'pu-bad':'pu-null';
@@ -2234,6 +2309,7 @@ function selWeek(yr,mk,wid){
   sel={type:"week",yr,mk,wid};
   weekEditMode=false;
   weekEditCtx={yr,mk,wid};
+  weekTab='exec'; // sempre abre na Visão Executiva
   const w=(DATA[team][yr][mk].weeks||[]).find(x=>x.id===wid);
   if(w) renderWeek(w); applyHL();
 }
@@ -2241,6 +2317,15 @@ function selWeek(yr,mk,wid){
 // ── Week Editor state ────────────────────────────────────────
 let weekEditMode = false;
 let weekEditCtx  = null; // { yr, mk, wid }
+let weekTab      = 'exec'; // 'exec' | 'rn'
+
+function switchWeekTab(tab){
+  weekTab = tab;
+  document.querySelectorAll('.wk-tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  document.querySelectorAll('.wk-panel').forEach(p => {
+    p.style.display = (p.id === 'wkp-' + tab) ? 'block' : 'none';
+  });
+}
 
 function weUid(){ return 'w'+Date.now()+Math.floor(Math.random()*9999); }
 
@@ -2548,8 +2633,56 @@ function renderWeek(w){
   const cs    = w.comingSoon  || [];
   const edit  = weekEditMode;
 
-  // ── modo visualização (original) ──────────────────────────
+  // ── modo visualização ─────────────────────────────────────
   if(!edit){
+
+    // ── Painel Visão Executiva ───────────────────────────────
+    // KPI cards com visual próprio
+    const execKpis = inds.length ? `
+      <div class="exec-section-label">Indicadores da semana</div>
+      <div class="exec-kpi-grid">
+        ${inds.map(ind=>`
+          <div class="exec-kpi">
+            <div class="exec-kpi-label">${esc(ind.label)}</div>
+            <div class="exec-kpi-value">${esc(ind.value)}</div>
+            ${ind.delta?`<div class="exec-kpi-delta ${ind.dir||'flat'}">${esc(ind.delta)}</div>`:''}
+          </div>`).join('')}
+      </div>` : '';
+
+    // Highlights com visual executivo
+    const buildExecHl = highlights => {
+      if(!highlights||!highlights.length)
+        return`<div style="padding:12px 0;font-size:13px;color:var(--text-secondary)">Nenhum destaque registrado.</div>`;
+      if(typeof highlights==="string")
+        return`<div class="hl-legacy">${esc(highlights)}</div>`;
+      return`<div class="exec-hl-list">${highlights.map(h=>`
+        <div class="exec-hl-item${h.type==='result'?' result':''}">
+          <div class="exec-hl-icon">${h.type==='result'?'📈':'◆'}</div>
+          <div class="exec-hl-body">
+            <div class="exec-hl-title">${esc(h.title||'')}</div>
+            ${h.desc?`<div class="exec-hl-desc">${esc(h.desc)}</div>`:''}
+          </div>
+        </div>`).join('')}</div>`;
+    };
+
+    const execPU = (w.projectUpdates||[]).filter(u=>(u.labels||[]).map(l=>l.toLowerCase()).includes('executivo'));
+    const execUpdatesHtml = execPU.length
+      ? `<div class="exec-section-label">Updates executivos</div>${renderProjectUpdates(w.projectUpdates,'exec')}`
+      : '';
+
+    // ── Painel Release Notes ─────────────────────────────────
+    const rnPU = (w.projectUpdates||[]).filter(u=>!(u.labels||[]).map(l=>l.toLowerCase()).includes('executivo'));
+    const rnUpdatesHtml = rnPU.length
+      ? `<div class="rn-section-label">Updates de iniciativas</div>${renderProjectUpdates(w.projectUpdates,'rn')}`
+      : '';
+
+    const rnDlv = dl.length
+      ? `<div class="rn-section-label">Entregas (${dl.length})</div>${dlvGrouped(dl)}`
+      : `<div class="rn-section-label">Entregas</div><div class="empty">Nenhuma entrega registrada para esta semana.</div>`;
+
+    const rnCS = `<div class="rn-section-label" style="margin-top:20px">O que vem por aí</div><div class="card">${csCards(cs)}</div>`;
+
+    const t = weekTab;
     document.getElementById("main").innerHTML=`
       <div class="we-bar">
         <div>
@@ -2560,18 +2693,23 @@ function renderWeek(w){
         <button class="we-btn" style="margin-left:auto" onclick="toggleWeekEdit()">✏ Editar semana</button>
       </div>
 
-      ${inds.length?`<div class="stitle">Indicadores</div>${kCardsOrPending(inds)}`:""}
+      <div class="wk-tabs">
+        <button class="wk-tab${t==='exec'?' on':''}" data-tab="exec" onclick="switchWeekTab('exec')">Visão Executiva</button>
+        <button class="wk-tab${t==='rn'?' on':''}" data-tab="rn" onclick="switchWeekTab('rn')">Release Notes</button>
+      </div>
 
-      <div class="stitle">Destaques</div>
-      ${hlCards(w.highlights)}
+      <div class="wk-panel" id="wkp-exec" style="display:${t==='exec'?'block':'none'}">
+        ${execKpis}
+        <div class="exec-section-label">Destaques</div>
+        ${buildExecHl(w.highlights)}
+        ${execUpdatesHtml}
+      </div>
 
-      ${(w.projectUpdates||[]).length?`<div class="stitle">Updates de Iniciativas</div>${renderProjectUpdates(w.projectUpdates)}`:""}
-
-      <div class="stitle">Entregas (${dl.length})</div>
-      ${dlvGrouped(dl)}
-
-      <div class="stitle">O que vem por aí</div>
-      <div class="card">${csCards(cs)}</div>
+      <div class="wk-panel" id="wkp-rn" style="display:${t==='rn'?'block':'none'}">
+        ${rnDlv}
+        ${rnCS}
+        ${rnUpdatesHtml}
+      </div>
     `;
     return;
   }
@@ -2711,164 +2849,3 @@ function renderWeek(w){
     <div class="we-add-row" onclick="weAddCS()">+ Adicionar item</div>
 
     <div id="we-export-anchor"></div>
-  `;
-}
-
-// ── Parse indicator value (handles thousand separators like "8.495.502") ─────
-function parseIndValue(str){
-  if(!str) return NaN;
-  // Remove thousand-separator dots: if string has pattern X.XXX (3 digits after dot) treat dots as thousand separators
-  // Strategy: remove all dots that are used as thousand separators, then replace comma with dot for decimal
-  const s = String(str)
-    .replace(/[^\d,.-]/g, '') // strip non-numeric except . , -
-    .replace(/\.(?=\d{3}(?:[,.]|$))/g, '') // remove thousand-separator dots
-    .replace(',', '.'); // decimal comma → dot
-  return parseFloat(s);
-}
-
-// ── Aggregation rules ────────────────────────────────────────
-// Returns the aggregated value for a set of weekly numeric values given a label and team.
-// Rules:
-//   vida — all indicators: last value (cumulative)
-//   cx   — "Volume de Chamados": sum; everything else: mean
-//   exp  — all indicators: mean
-function aggValue(t, label, nums){
-  if(!nums||!nums.length) return null;
-  if(t==="vida") return nums[nums.length-1];
-  if(t==="cx"&&label==="Volume de Chamados") return nums.reduce((a,b)=>a+b,0);
-  return nums.reduce((a,b)=>a+b,0)/nums.length;
-}
-
-function renderMonth(yr,mk,mn){
-  const md=DATA[team][yr][mk]; const ws=md.weeks||[];
-  let allD=[]; ws.forEach(w=>(w.deliveries||[]).forEach(d=>allD.push({...d,weekLabel:w.label})));
-
-  // Build chart data — collect all numeric indicators across weeks (chronological order)
-  const indMap={};
-  ws.slice().reverse().forEach(w=>{
-    (w.indicators||[]).forEach(ind=>{
-      if(!indMap[ind.label]) indMap[ind.label]=[];
-      const num=parseIndValue(ind.value);
-      if(!isNaN(num)) indMap[ind.label].push({ x:w.label, y:num });
-    });
-  });
-  const chartDatasets=Object.entries(indMap).filter(([,v])=>v.length>0).map(([label,pts])=>({ label, data:pts.map(p=>p.y) }));
-  const chartLabels=ws.slice().reverse().map(w=>w.label);
-
-  const wh=ws.slice().reverse().map(w=>`
-    <div class="wr" onclick="selWeek('${yr}','${mk}','${w.id}')">
-      <span class="wl">${esc(w.label)}</span>
-      <span class="wm">${(w.deliveries||[]).length} entrega(s)${w.cycle?" · "+esc(w.cycle):""}</span>
-    </div>`).join("");
-
-  document.getElementById("main").innerHTML=`
-    <div class="ptag">Mês</div>
-    <div class="ptitle">${esc(mn)} ${yr}</div>
-    <div class="psub">${ws.length} semana(s) · ${allD.length} entrega(s)</div>
-
-    ${chartDatasets.length?`
-    <div class="stitle">Evolução dos indicadores — semana a semana</div>
-    <div class="card">
-      <div id="filters-chart-month" class="ind-filters"></div>
-      <div class="chart-wrap"><canvas id="chart-month"></canvas></div>
-    </div>`:""}
-
-    <div class="stitle">Semanas</div>
-    <div class="card">${wh||"<div class='empty'>Nenhuma semana.</div>"}</div>
-
-    <div class="stitle">Todas as Entregas (${allD.length})</div>
-    ${allD.length?dlvGrouped(allD,null):`<div class="empty">Nenhuma entrega neste mês.</div>`}
-  `;
-  if(chartDatasets.length) buildChart("chart-month",chartDatasets,chartLabels);
-}
-
-function renderYear(yr){
-  const yd=DATA[team][yr]; let tot=0;
-
-  // Aggregate monthly indicators
-  const monthIndMap={};
-  const monthLabels=[];
-  Object.keys(yd).filter(k=>/^\d+$/.test(k)).sort((a,b)=>a-b).forEach(mk=>{
-    const mn=MONTHS[parseInt(mk)-1].slice(0,3);
-    monthLabels.push(mn);
-    const ws=yd[mk].weeks||[];
-    let cnt=0; ws.forEach(w=>cnt+=(w.deliveries||[]).length); tot+=cnt;
-  // Aggregate monthly indicators using business rules
-  const indSums={};
-    ws.forEach(w=>(w.indicators||[]).forEach(ind=>{
-      const num=parseIndValue(ind.value);
-      if(!isNaN(num)){
-        if(!indSums[ind.label]) indSums[ind.label]=[];
-        indSums[ind.label].push(num);
-      }
-    }));
-    Object.entries(indSums).forEach(([label,nums])=>{
-      if(!monthIndMap[label]) monthIndMap[label]=[];
-      monthIndMap[label].push(aggValue(team,label,nums));
-    });
-  });
-  const yearDatasets=Object.entries(monthIndMap).filter(([,v])=>v.length>0).map(([label,data])=>({label,data}));
-
-  const cards=Object.keys(yd).filter(k=>/^\d+$/.test(k)).sort((a,b)=>b-a).map(mk=>{
-    const mn=MONTHS[parseInt(mk)-1]; const ws=yd[mk].weeks||[]; let c=0;
-    ws.forEach(w=>c+=(w.deliveries||[]).length);
-    return`<div class="pc" onclick="selMonth('${yr}','${mk}','${mn}')"><span class="pn">${mn}</span><span class="pi">${ws.length} sem. · ${c} entregas</span></div>`;
-  }).join("");
-
-  document.getElementById("main").innerHTML=`
-    <div class="ptag">Ano</div>
-    <div class="ptitle">${yr}</div>
-    <div class="psub">${tot} entrega(s) no total</div>
-
-    ${yearDatasets.length?`
-    <div class="stitle">Evolução dos indicadores — mês a mês</div>
-    <div class="card">
-      <div id="filters-chart-year" class="ind-filters"></div>
-      <div class="chart-wrap"><canvas id="chart-year"></canvas></div>
-    </div>`:""}
-
-    <div class="stitle">Meses com registros</div>
-    ${cards||`<div class="empty">Nenhum mês registrado.</div>`}
-  `;
-  if(yearDatasets.length) buildChart("chart-year",yearDatasets,monthLabels);
-}
-
-// ── Persistência ─────────────────────────────────────────────
-async function saveData(){
-  try {
-    await _sb.from('release_notes_data').upsert({
-      id: 'main',
-      data: DATA,
-      updated_at: new Date().toISOString()
-    });
-  } catch(e){ console.warn('saveData:', e); }
-}
-
-async function downloadHTML(){
-  const dataStr = 'const DATA = ' + JSON.stringify(DATA, null, 2) + ';';
-  let source;
-  try {
-    const res = await fetch(window.location.href);
-    if (!res.ok) throw new Error('fetch failed');
-    source = await res.text();
-  } catch(e) {
-    try { source = document.documentElement.outerHTML; }
-    catch(e2) { alert('Não foi possível gerar o download neste ambiente. Abra o arquivo diretamente no navegador e tente novamente.'); return; }
-  }
-  const updated = source.replace(
-    /(<script\s+id="data-block"[^>]*>)([\s\S]*?)(<\/script>)/,
-    (_, open, _body, close) => open + '\n' + dataStr + '\n' + close
-  );
-  const blob = new Blob([updated], {type: 'text/html'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'produto-growth-release-notes-v3.html';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-</script>
-
-
-
-</body></html>
