@@ -2494,18 +2494,69 @@ function renderMonth(yr,mk,mn){
   const allAlerts=[];
   ws.forEach(w=>(w.alerts||[]).forEach(a=>allAlerts.push({...a,weekLabel:w.label})));
 
+  // ── Indicadores: filtrar indicadores removidos por time
+  // vida: Base Comunicável e Camada Gold foram descontinuados
+  const VIDA_IND_EXCLUDE = ['base comunicável','camada gold'];
+  function filterInds(inds, t){
+    if(t !== 'vida') return inds;
+    return inds.filter(i => !VIDA_IND_EXCLUDE.includes((i.label||'').toLowerCase().trim()));
+  }
+
   // ── Indicadores: pegar a semana mais recente com dados reais
   const lastWeekWithData=ws.find(w=>(w.indicators||[]).some(i=>i.value!=='—'))||ws[0];
-  const baseInds=lastWeekWithData?(lastWeekWithData.indicators||[]):[];
+  const baseInds=filterInds(lastWeekWithData?(lastWeekWithData.indicators||[]):[], team);
 
-  // Montar tendência: para cada indicador, coletar valores das demais semanas
-  function buildTrend(label){
+  // ── Calcular delta MoM (primeira semana com dado vs. última semana com dado no mês)
+  // O campo ind.delta armazenado no JSON é sempre S/S (semana vs semana anterior) —
+  // não serve para o consolidado mensal. Calculamos aqui a variação intra-mês.
+  function parsePtBR(str){
+    // Converte "3,21%", "3.456,78", "85%", "2,55x" para float
+    // Retorna NaN se não parseável (—, texto livre, K, etc.)
+    if(!str||str==='—') return NaN;
+    const clean = str.replace(/\./g,'').replace(',','.').replace(/[%x×pp\s]/gi,'');
+    return parseFloat(clean);
+  }
+  function detectUnit(str){
+    if(!str||str==='—') return '';
+    if(str.includes('%'))  return '%';
+    if(str.toLowerCase().includes('x')) return 'x';
+    return '';
+  }
+  function fmtDelta(diff, unit){
+    const sign = diff >= 0 ? '+' : '';
+    if(unit === '%'){
+      // variação em pp: e.g. 3.21 - 3.03 = +0.18pp
+      return sign + diff.toFixed(2).replace('.',',') + 'pp';
+    }
+    if(unit === 'x'){
+      return sign + diff.toFixed(2).replace('.',',') + 'x';
+    }
+    // número absoluto — formatar sem casas se inteiro, com 2 casas se decimal
+    const abs = Math.abs(diff);
+    const fmt = abs >= 1000
+      ? Intl.NumberFormat('pt-BR').format(Math.round(diff))
+      : (Number.isInteger(diff) ? String(diff) : sign + diff.toFixed(2).replace('.',','));
+    return sign + (abs >= 1000 ? Intl.NumberFormat('pt-BR').format(Math.round(diff)) : (diff % 1 === 0 ? String(Math.round(diff)) : diff.toFixed(2).replace('.',',')));
+  }
+
+  function buildMoMDelta(label){
+    // Coletar todas as semanas do mês com valor real, em ordem cronológica (antiga → recente)
     const pts=[];
-    ws.slice().reverse().forEach(w=>{
+    ws.slice().sort((a,b)=>a.id.localeCompare(b.id)).forEach(w=>{
       const ind=(w.indicators||[]).find(i=>i.label===label);
-      if(ind&&ind.value!=='—') pts.push({week:w.label,value:ind.value,delta:ind.delta,dir:ind.dir});
+      if(ind&&ind.value!=='—') pts.push(ind);
     });
-    return pts;
+    if(pts.length < 2) return null; // sem variação calculável
+    const first = pts[0];
+    const last  = pts[pts.length-1];
+    const vFirst = parsePtBR(first.value);
+    const vLast  = parsePtBR(last.value);
+    if(isNaN(vFirst)||isNaN(vLast)) return null;
+    const diff = vLast - vFirst;
+    const unit = detectUnit(last.value);
+    // Direção: mesmo critério das semanas
+    const dir = diff > 0.001 ? 'up' : diff < -0.001 ? 'down' : 'flat';
+    return { delta: fmtDelta(diff, unit), dir };
   }
 
   // ── KR Progress (reusar buildKrEvolution mas apenas o bloco de progresso)
@@ -2515,21 +2566,18 @@ function renderMonth(yr,mk,mn){
   // PAINEL VISÃO EXECUTIVA
   // ─────────────────────────────────────────
 
-  // 1. Indicadores consolidados (semana mais recente com dado)
+  // 1. Indicadores consolidados com delta MoM calculado
   const moKpiHtml = baseInds.length ? `
-    <div class="exec-section-label">Indicadores — semana mais recente com dados</div>
+    <div class="exec-section-label">Indicadores — fechamento do mês</div>
     <div class="mo-kpi-grid">
       ${baseInds.map(ind=>{
-        const dc=ind.dir==='up'?'up':ind.dir==='down'?'down':'flat';
-        const trend=buildTrend(ind.label);
-        const trendTxt=trend.length>1
-          ? trend.map(p=>p.week.replace(' – ','–')).join(' → ')
-          : '';
+        const mom = buildMoMDelta(ind.label);
+        const dc  = mom ? mom.dir : 'flat';
         return`<div class="mo-kpi">
           <div class="mo-kpi-label">${esc(ind.label)}</div>
           <div class="mo-kpi-value">${esc(ind.value)}</div>
-          ${ind.delta?`<div class="mo-kpi-delta ${dc}">${esc(ind.delta)}</div>`:''}
-          ${trendTxt?`<div class="mo-kpi-trend">Ref: ${esc(lastWeekWithData.label)}</div>`:''}
+          ${mom ? `<div class="mo-kpi-delta ${dc}">${esc(mom.delta)} no mês</div>` : ''}
+          <div class="mo-kpi-trend">Ref: ${esc(lastWeekWithData.label)}</div>
         </div>`;
       }).join('')}
     </div>` : '';
@@ -2647,11 +2695,15 @@ function renderMonth(yr,mk,mn){
       <div class="empty" style="padding:24px 0;text-align:left">Nenhuma entrega registrada para este mês.</div>`;
   }
 
-  // Project updates não-executivos (kanban)
+  // Project updates na aba Release Notes: todos os não-executivos
+  // BUG anterior: guardava em rnPU.length mas passava allPU — corrigido abaixo
   const rnUpdatesHtml = rnPU.length
     ? `<div class="rn-section-label">Updates de iniciativas</div>
-       <div class="mo-updates-kanban">${renderProjectUpdates(allPU,'rn')}</div>`
-    : '';
+       <div class="mo-updates-kanban">${renderProjectUpdates(rnPU,'all')}</div>`
+    : (allPU.length && !rnPU.length
+        ? `<div class="rn-section-label">Updates de iniciativas</div>
+           <div style="padding:12px 0;font-size:13px;color:var(--text-secondary)">Todos os updates deste mês são de iniciativas executivas — veja a aba Visão Executiva.</div>`
+        : '');
 
   // Todas as semanas como links
   const weekLinksHtml = ws.length ? `
