@@ -1428,6 +1428,13 @@ const DEP_CLS ={auto:"d-auto",dados:"d-dados",smart:"d-smart",dev:"d-dev"};
 const DEP_LBL ={auto:"Automações",dados:"Dados",smart:"Smart",dev:"Dev"};
 const LABEL_W=190, Q_W=140;
 
+// ── Indicadores descontinuados por time — filtrar em toda renderização ──
+const VIDA_IND_EXCLUDE = ['base comunicável','camada gold'];
+function filterInds(inds, t){
+  if(t !== 'vida') return inds;
+  return (inds||[]).filter(i => !VIDA_IND_EXCLUDE.includes((i.label||'').toLowerCase().trim()));
+}
+
 var team="exp"; var sel=null;
 var rmDep={exp:"all",vida:"all",cx:"all"};
 let rmOpen={};
@@ -2494,14 +2501,6 @@ function renderMonth(yr,mk,mn){
   const allAlerts=[];
   ws.forEach(w=>(w.alerts||[]).forEach(a=>allAlerts.push({...a,weekLabel:w.label})));
 
-  // ── Indicadores: filtrar indicadores removidos por time
-  // vida: Base Comunicável e Camada Gold foram descontinuados
-  const VIDA_IND_EXCLUDE = ['base comunicável','camada gold'];
-  function filterInds(inds, t){
-    if(t !== 'vida') return inds;
-    return inds.filter(i => !VIDA_IND_EXCLUDE.includes((i.label||'').toLowerCase().trim()));
-  }
-
   // ── Indicadores: pegar a semana mais recente com dados reais
   const lastWeekWithData=ws.find(w=>(w.indicators||[]).some(i=>i.value!=='—'))||ws[0];
   const baseInds=filterInds(lastWeekWithData?(lastWeekWithData.indicators||[]):[], team);
@@ -2608,25 +2607,34 @@ function renderMonth(yr,mk,mn){
     </div>` : `<div class="exec-section-label">Destaques do mês</div>
     <div style="padding:14px 0;font-size:13px;color:var(--text-secondary)">Nenhum destaque registrado para este mês.</div>`;
 
-  // 4. Projetos executivos
+  // 4. Card consolidado de iniciativas executivas
   const healthCls=st=>st==='on_track'?'st-ok':st==='at_risk'?'st-warn':st==='off_track'?'st-bad':'st-null';
-  const healthLabel=st=>st==='on_track'?'On track':st==='at_risk'?'At risk':st==='off_track'?'Off track':null;
-  const healthDot=st=>st==='on_track'?'#1D9E75':st==='at_risk'?'#EF9F27':st==='off_track'?'#E24B4A':'var(--ac)';
+  const healthLabel=st=>st==='on_track'?'On track':st==='at_risk'?'At risk':st==='off_track'?'Off track':'—';
+  const healthDot=st=>st==='on_track'?'#1D9E75':st==='at_risk'?'#EF9F27':st==='off_track'?'#E24B4A':'#A0AEC0';
+  const healthBg=st=>st==='on_track'?'#E1F5EE':st==='at_risk'?'#FAEEDA':st==='off_track'?'#FDEAEA':'#EDF2F7';
+  const healthTxt=st=>st==='on_track'?'#065237':st==='at_risk'?'#854F0B':st==='off_track'?'#7A1C1B':'#4A5568';
 
-  const execProjHtml = execPU.length ? `
-    <div class="exec-section-label">Iniciativas de destaque executivo</div>
-    <div class="mo-proj-exec-grid">
-      ${execPU.map(u=>{
+  const execInitiativesHtml = execPU.length ? `
+    <div class="exec-section-label">Iniciativas executivas</div>
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:16px">
+      ${execPU.map((u,i)=>{
         const hc=healthCls(u.status); const hl=healthLabel(u.status);
-        return`<div class="mo-proj-exec-card">
-          <div class="mo-proj-exec-top">
-            <span class="mo-proj-exec-badge">★ Executivo</span>
-            <span class="mo-proj-exec-name">${esc(u.project)}</span>
-            ${hl?`<span class="mo-proj-exec-status ${hc}"><svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="${healthDot(u.status)}"/></svg>${esc(hl)}</span>`:''}
+        const dot=healthDot(u.status); const bg=healthBg(u.status); const txt=healthTxt(u.status);
+        const border = i>0 ? 'border-top:0.5px solid var(--border);' : '';
+        return`<div style="${border}padding:13px 16px;display:flex;gap:12px;align-items:flex-start">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+              <span style="font-size:13px;font-weight:600;color:var(--text-primary)">${esc(u.project)}</span>
+              ${u.projectStatus?`<span style="font-size:10px;font-weight:500;color:var(--text-secondary);background:var(--bg-secondary);border-radius:6px;padding:1px 7px;border:0.5px solid var(--border)">${esc(u.projectStatus)}</span>`:''}
+            </div>
+            <div style="font-size:12.5px;color:var(--text-secondary);line-height:1.55">${esc(u.body)}</div>
           </div>
-          ${u.projectStatus?`<div class="mo-proj-exec-phase">${esc(u.projectStatus)}</div>`:''}
-          <div class="mo-proj-exec-body">${esc(u.body)}</div>
-          ${u.date?`<div class="mo-proj-exec-weeks">Última atualização: ${esc(u.date)}</div>`:''}
+          <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px;padding-top:2px">
+            <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:${bg};color:${txt}">
+              <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="${dot}"/></svg>${esc(hl)}
+            </span>
+            ${u.date?`<span style="font-size:10.5px;color:var(--text-secondary)">${esc(u.date)}</span>`:''}
+          </div>
         </div>`;
       }).join('')}
     </div>` : '';
@@ -2663,7 +2671,7 @@ function renderMonth(yr,mk,mn){
       </div>
     </div>`;
 
-  const execPanel = moSummaryHtml + moKpiHtml + execHlHtml + execProjHtml + alertsHtml + execKrSection;
+  const execPanel = moSummaryHtml + execInitiativesHtml + moKpiHtml + execHlHtml + alertsHtml + execKrSection;
 
   // ─────────────────────────────────────────
   // PAINEL RELEASE NOTES
@@ -3065,7 +3073,7 @@ function renderHome(){
   `;
 }
 function renderWeek(w){
-  const inds  = w.indicators  || [];
+  const inds  = filterInds(w.indicators || [], team);
   const dl    = w.deliveries  || [];
   const cs    = w.comingSoon  || [];
   const edit  = weekEditMode;
