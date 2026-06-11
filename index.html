@@ -1094,6 +1094,70 @@ body {
 const _SB_URL = 'https://ddspskifskoqznemxuuu.supabase.co';
 const _SB_KEY = 'sb_publishable_zY82pfmfz7OuD-RjLrEngA_cUzm7bVH';
 const _sb = supabase.createClient(_SB_URL, _SB_KEY);
+
+async function loadReleaseNotesData(){
+  try {
+    const res = await _sb.from('release_notes_data').select('data').eq('id','main').single();
+    if(res.error) throw res.error;
+    window.DATA = res.data.data;
+    DATA = res.data.data;
+    Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
+    setColor(team); buildSB(); renderHome();
+  } catch(err) {
+    console.error('Erro ao carregar dados do Supabase:', err);
+    document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
+  }
+}
+
+// Definida de forma síncrona — sempre disponível ao click independente de timing
+window.pwCheck = async function(){
+  const email = document.getElementById('pw-email').value.trim();
+  const password = document.getElementById('pw-input').value;
+  const btn = document.getElementById('pw-btn');
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+
+  const { data, error } = await _sb.auth.signInWithPassword({ email, password });
+
+  if(error){
+    document.getElementById('pw-err').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+    return;
+  }
+
+  await _sb.from('audit_log').insert({
+    user_email: email,
+    dashboard: 'release-notes',
+    action: 'login'
+  });
+
+  document.getElementById('pw-gate').style.display = 'none';
+  loadReleaseNotesData();
+};
+
+// Verifica sessão existente ao carregar a página
+(async function(){
+  try {
+    const { data: { session } } = await _sb.auth.getSession();
+    if(session){
+      document.getElementById('pw-gate').style.display = 'none';
+      loadReleaseNotesData();
+    } else {
+      const inp = document.getElementById('pw-email');
+      if(inp) inp.focus();
+    }
+  } catch(e) {
+    console.warn('Erro ao verificar sessão:', e);
+  }
+})();
+
+async function logout(){
+  await _sb.auth.signOut();
+  location.reload();
+}
 </script>
 <!-- ── /SUPABASE AUTH GATE ── -->
 
@@ -1247,11 +1311,11 @@ const DEP_CLS ={auto:"d-auto",dados:"d-dados",smart:"d-smart",dev:"d-dev"};
 const DEP_LBL ={auto:"Automações",dados:"Dados",smart:"Smart",dev:"Dev"};
 const LABEL_W=190, Q_W=140;
 
-var team="exp", sel=null;
-var rmDep={exp:"all",vida:"all",cx:"all"};
-var rmOpen={};
-var rmEditMode={exp:false,vida:false,cx:false};
-var rmDragInit=null, rmDragDor=null, rmDragTeam=null;
+let team="exp", sel=null;
+let rmDep={exp:"all",vida:"all",cx:"all"};
+let rmOpen={};
+let rmEditMode={exp:false,vida:false,cx:false};
+let rmDragInit=null, rmDragDor=null, rmDragTeam=null;
 
 // ── Helpers ──────────────────────────────────────────────────
 function setColor(t){
@@ -2788,80 +2852,3 @@ function renderWeek(w){
     <div class="we-add-row" onclick="weAddCS()">+ Adicionar item</div>
 
     <div id="we-export-anchor"></div>
-
-`; // close innerHTML=`...` (renderWeek edit mode)
-} // close renderWeek()
-
-// ── Auth functions — defined at global scope (unconditional) ────────────────
-// pwCheck must be available the moment the button is clicked.
-// Defining inside the IIFE was conditional and fragile.
-
-async function loadReleaseNotesData(){
-  try {
-    const res = await _sb.from('release_notes_data').select('data').eq('id','main').single();
-    if(res.error) throw res.error;
-    window.DATA = res.data.data;
-    DATA = res.data.data;
-    Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
-    setColor(team); buildSB(); renderHome();
-  } catch(err) {
-    console.error('Erro ao carregar dados do Supabase:', err);
-    document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
-  }
-}
-
-window.pwCheck = async function(){
-  const email = document.getElementById('pw-email').value.trim();
-  const password = document.getElementById('pw-input').value;
-  const btn = document.getElementById('pw-btn');
-  btn.disabled = true;
-  btn.textContent = 'Entrando...';
-
-  const { data, error } = await _sb.auth.signInWithPassword({ email, password });
-
-  if(error){
-    document.getElementById('pw-err').style.display = 'block';
-    document.getElementById('pw-input').value = '';
-    document.getElementById('pw-input').focus();
-    btn.disabled = false;
-    btn.textContent = 'Entrar';
-    return;
-  }
-
-  await _sb.from('audit_log').insert({
-    user_email: email,
-    dashboard: 'release-notes',
-    action: 'login'
-  });
-
-  document.getElementById('pw-gate').style.display = 'none';
-  loadReleaseNotesData();
-};
-
-window.logout = async function(){
-  await _sb.auth.signOut();
-  location.reload();
-};
-
-// Auto-login: if session exists, skip the gate entirely
-(async function(){
-  try {
-    const { data: { session } } = await _sb.auth.getSession();
-    if(session){
-      document.getElementById('pw-gate').style.display = 'none';
-      loadReleaseNotesData();
-    }
-  } catch(e) {
-    console.warn('getSession error (non-fatal):', e.message);
-  }
-  // Focus email field after DOM ready (if gate is still showing)
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', () => {
-      const inp = document.getElementById('pw-email');
-      if(inp && document.getElementById('pw-gate').style.display !== 'none') inp.focus();
-    });
-  } else {
-    const inp = document.getElementById('pw-email');
-    if(inp && document.getElementById('pw-gate').style.display !== 'none') inp.focus();
-  }
-})();
