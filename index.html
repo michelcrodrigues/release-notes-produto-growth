@@ -1095,6 +1095,11 @@ const _SB_URL = 'https://ddspskifskoqznemxuuu.supabase.co';
 const _SB_KEY = 'sb_publishable_zY82pfmfz7OuD-RjLrEngA_cUzm7bVH';
 const _sb = supabase.createClient(_SB_URL, _SB_KEY);
 
+// Declarações antecipadas — necessárias para loadReleaseNotesData usar antes da definição principal
+var rmDep = {};
+var rmOpen = {};
+var rmEditMode = {};
+
 async function loadReleaseNotesData(){
   try {
     const res = await _sb.from('release_notes_data').select('data').eq('id','main').single();
@@ -1105,7 +1110,20 @@ async function loadReleaseNotesData(){
     setColor(team); buildSB(); renderHome();
   } catch(err) {
     console.error('Erro ao carregar dados do Supabase:', err);
-    document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
+    // Tenta fallback para arquivo JSON local
+    try {
+      const localRes = await fetch('./release-notes-data.json');
+      if(!localRes.ok) throw new Error('JSON local vazio ou inexistente');
+      const localData = await localRes.json();
+      if(!localData || Object.keys(localData).length === 0) throw new Error('JSON local sem dados');
+      window.DATA = localData;
+      DATA = localData;
+      Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
+      setColor(team); buildSB(); renderHome();
+    } catch(fallbackErr) {
+      console.error('Fallback local também falhou:', fallbackErr);
+      document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
+    }
   }
 }
 
@@ -1312,9 +1330,9 @@ const DEP_LBL ={auto:"Automações",dados:"Dados",smart:"Smart",dev:"Dev"};
 const LABEL_W=190, Q_W=140;
 
 var team="exp"; var sel=null;
-var rmDep={exp:"all",vida:"all",cx:"all"};
-let rmOpen={};
-let rmEditMode={exp:false,vida:false,cx:false};
+rmDep={exp:"all",vida:"all",cx:"all"};
+rmOpen={};
+rmEditMode={exp:false,vida:false,cx:false};
 let rmDragInit=null, rmDragDor=null, rmDragTeam=null;
 
 // ── Helpers ──────────────────────────────────────────────────
