@@ -1094,67 +1094,6 @@ body {
 const _SB_URL = 'https://ddspskifskoqznemxuuu.supabase.co';
 const _SB_KEY = 'sb_publishable_zY82pfmfz7OuD-RjLrEngA_cUzm7bVH';
 const _sb = supabase.createClient(_SB_URL, _SB_KEY);
-
-async function loadReleaseNotesData(){
-  try {
-    const res = await _sb.from('release_notes_data').select('data').eq('id','main').single();
-    if(res.error) throw res.error;
-    window.DATA = res.data.data;
-    DATA = res.data.data;
-    Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
-    setColor(team); buildSB(); renderHome();
-  } catch(err) {
-    console.error('Erro ao carregar dados do Supabase:', err);
-    document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
-  }
-}
-
-(async function(){
-  const { data: { session } } = await _sb.auth.getSession();
-  if(session){
-    document.getElementById('pw-gate').style.display = 'none';
-    loadReleaseNotesData();
-    return;
-  }
-
-  window.pwCheck = async function(){
-    const email = document.getElementById('pw-email').value.trim();
-    const password = document.getElementById('pw-input').value;
-    const btn = document.getElementById('pw-btn');
-    btn.disabled = true;
-    btn.textContent = 'Entrando...';
-
-    const { data, error } = await _sb.auth.signInWithPassword({ email, password });
-
-    if(error){
-      document.getElementById('pw-err').style.display = 'block';
-      document.getElementById('pw-input').value = '';
-      document.getElementById('pw-input').focus();
-      btn.disabled = false;
-      btn.textContent = 'Entrar';
-      return;
-    }
-
-    await _sb.from('audit_log').insert({
-      user_email: email,
-      dashboard: 'release-notes',
-      action: 'login'
-    });
-
-    document.getElementById('pw-gate').style.display = 'none';
-    loadReleaseNotesData();
-  };
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const inp = document.getElementById('pw-email');
-    if(inp) inp.focus();
-  });
-})();
-
-async function logout(){
-  await _sb.auth.signOut();
-  location.reload();
-}
 </script>
 <!-- ── /SUPABASE AUTH GATE ── -->
 
@@ -2849,3 +2788,70 @@ function renderWeek(w){
     <div class="we-add-row" onclick="weAddCS()">+ Adicionar item</div>
 
     <div id="we-export-anchor"></div>
+
+
+// ── Auth & Data Loading ──────────────────────────────────────
+// Moved here (after all globals are defined) to avoid microtask race condition:
+// Supabase resolves getSession() from localStorage as a microtask, which could
+// resume the IIFE before subsequent <script> blocks execute and define rmDep etc.
+
+async function loadReleaseNotesData(){
+  try {
+    const res = await _sb.from('release_notes_data').select('data').eq('id','main').single();
+    if(res.error) throw res.error;
+    window.DATA = res.data.data;
+    DATA = res.data.data;
+    Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
+    setColor(team); buildSB(); renderHome();
+  } catch(err) {
+    console.error('Erro ao carregar dados do Supabase:', err);
+    document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
+  }
+}
+
+(async function(){
+  const { data: { session } } = await _sb.auth.getSession();
+  if(session){
+    document.getElementById('pw-gate').style.display = 'none';
+    loadReleaseNotesData();
+    return;
+  }
+
+  window.pwCheck = async function(){
+    const email = document.getElementById('pw-email').value.trim();
+    const password = document.getElementById('pw-input').value;
+    const btn = document.getElementById('pw-btn');
+    btn.disabled = true;
+    btn.textContent = 'Entrando...';
+
+    const { data, error } = await _sb.auth.signInWithPassword({ email, password });
+
+    if(error){
+      document.getElementById('pw-err').style.display = 'block';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+      return;
+    }
+
+    await _sb.from('audit_log').insert({
+      user_email: email,
+      dashboard: 'release-notes',
+      action: 'login'
+    });
+
+    document.getElementById('pw-gate').style.display = 'none';
+    loadReleaseNotesData();
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const inp = document.getElementById('pw-email');
+    if(inp) inp.focus();
+  });
+})();
+
+async function logout(){
+  await _sb.auth.signOut();
+  location.reload();
+}
