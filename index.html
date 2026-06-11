@@ -2789,13 +2789,12 @@ function renderWeek(w){
 
     <div id="we-export-anchor"></div>
 
-`; // closes innerHTML template literal (edit mode)
-} // closes renderWeek()
+`; // close innerHTML=`...` (renderWeek edit mode)
+} // close renderWeek()
 
-// ── Auth & Data Loading ──────────────────────────────────────
-// Defined here (after all globals) to avoid microtask race condition:
-// Supabase can resolve getSession() from localStorage as a microtask,
-// which would resume the IIFE before subsequent <script> blocks execute.
+// ── Auth functions — defined at global scope (unconditional) ────────────────
+// pwCheck must be available the moment the button is clicked.
+// Defining inside the IIFE was conditional and fragile.
 
 async function loadReleaseNotesData(){
   try {
@@ -2811,49 +2810,58 @@ async function loadReleaseNotesData(){
   }
 }
 
-(async function(){
-  const { data: { session } } = await _sb.auth.getSession();
-  if(session){
-    document.getElementById('pw-gate').style.display = 'none';
-    loadReleaseNotesData();
+window.pwCheck = async function(){
+  const email = document.getElementById('pw-email').value.trim();
+  const password = document.getElementById('pw-input').value;
+  const btn = document.getElementById('pw-btn');
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+
+  const { data, error } = await _sb.auth.signInWithPassword({ email, password });
+
+  if(error){
+    document.getElementById('pw-err').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
     return;
   }
 
-  window.pwCheck = async function(){
-    const email = document.getElementById('pw-email').value.trim();
-    const password = document.getElementById('pw-input').value;
-    const btn = document.getElementById('pw-btn');
-    btn.disabled = true;
-    btn.textContent = 'Entrando...';
-
-    const { data, error } = await _sb.auth.signInWithPassword({ email, password });
-
-    if(error){
-      document.getElementById('pw-err').style.display = 'block';
-      document.getElementById('pw-input').value = '';
-      document.getElementById('pw-input').focus();
-      btn.disabled = false;
-      btn.textContent = 'Entrar';
-      return;
-    }
-
-    await _sb.from('audit_log').insert({
-      user_email: email,
-      dashboard: 'release-notes',
-      action: 'login'
-    });
-
-    document.getElementById('pw-gate').style.display = 'none';
-    loadReleaseNotesData();
-  };
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const inp = document.getElementById('pw-email');
-    if(inp) inp.focus();
+  await _sb.from('audit_log').insert({
+    user_email: email,
+    dashboard: 'release-notes',
+    action: 'login'
   });
-})();
 
-async function logout(){
+  document.getElementById('pw-gate').style.display = 'none';
+  loadReleaseNotesData();
+};
+
+window.logout = async function(){
   await _sb.auth.signOut();
   location.reload();
-}
+};
+
+// Auto-login: if session exists, skip the gate entirely
+(async function(){
+  try {
+    const { data: { session } } = await _sb.auth.getSession();
+    if(session){
+      document.getElementById('pw-gate').style.display = 'none';
+      loadReleaseNotesData();
+    }
+  } catch(e) {
+    console.warn('getSession error (non-fatal):', e.message);
+  }
+  // Focus email field after DOM ready (if gate is still showing)
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', () => {
+      const inp = document.getElementById('pw-email');
+      if(inp && document.getElementById('pw-gate').style.display !== 'none') inp.focus();
+    });
+  } else {
+    const inp = document.getElementById('pw-email');
+    if(inp && document.getElementById('pw-gate').style.display !== 'none') inp.focus();
+  }
+})();
