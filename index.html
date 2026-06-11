@@ -1241,9 +1241,9 @@ const DEP_LBL ={auto:"Automações",dados:"Dados",smart:"Smart",dev:"Dev"};
 const LABEL_W=190, Q_W=140;
 
 var team="exp"; var sel=null;
-rmDep={exp:"all",vida:"all",cx:"all"};
-rmOpen={};
-rmEditMode={exp:false,vida:false,cx:false};
+var rmDep={exp:"all",vida:"all",cx:"all"};
+let rmOpen={};
+let rmEditMode={exp:false,vida:false,cx:false};
 let rmDragInit=null, rmDragDor=null, rmDragTeam=null;
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -2781,13 +2781,15 @@ function renderWeek(w){
     <div class="we-add-row" onclick="weAddCS()">+ Adicionar item</div>
 
     <div id="we-export-anchor"></div>
+`;
+}
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const _SB_URL = 'https://ddspskifskoqznemxuuu.supabase.co';
 const _SB_KEY = 'sb_publishable_zY82pfmfz7OuD-RjLrEngA_cUzm7bVH';
 const _sb = supabase.createClient(_SB_URL, _SB_KEY);
-
 
 async function loadReleaseNotesData(){
   try {
@@ -2799,10 +2801,9 @@ async function loadReleaseNotesData(){
     setColor(team); buildSB(); renderHome();
   } catch(err) {
     console.error('Erro ao carregar dados do Supabase:', err);
-    // Tenta fallback para arquivo JSON local
     try {
       const localRes = await fetch('./release-notes-data.json');
-      if(!localRes.ok) throw new Error('JSON local indisponível');
+      if(!localRes.ok) throw new Error('JSON local indisponivel');
       const text = await localRes.text();
       if(!text || text.trim().length === 0) throw new Error('JSON local vazio');
       const localData = JSON.parse(text);
@@ -2812,7 +2813,7 @@ async function loadReleaseNotesData(){
       Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
       setColor(team); buildSB(); renderHome();
     } catch(fallbackErr) {
-      console.error('Fallback local também falhou:', fallbackErr);
+      console.error('Fallback local tambem falhou:', fallbackErr);
       document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
     }
   }
