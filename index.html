@@ -2462,7 +2462,8 @@ function renderYear(yr){
       <div class="header-date" style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">Release Notes · ${esc(DATA[team].meta.name)}</div>
       <div class="htitle">${yr}</div>
     </div>
-    <div class="stitle">Meses</div>${rows}`;
+    <div class="stitle">Meses</div>${rows}
+    ${buildKrEvolution(DATA[team].meta)}`;
 }
 
 // ── renderMonth — VISÃO CONSOLIDADA ──────────────────────────
@@ -2586,12 +2587,13 @@ function renderMonth(yr,mk,mn){
     ? `<div class="exec-section-label">Evolução dos KRs no mês</div>${krHtml}`
     : '';
 
-  // 3. Destaques executivos — todos os highlights do mês, agrupados, priorizando os do tipo 'result'
-  const sortedHl=[...allHighlights].sort((a,b)=>(b.type==='result'?1:0)-(a.type==='result'?1:0));
-  const execHlHtml = sortedHl.length ? `
+  // 3. Destaques executivos — usa highlights_monthly (gerado via Protocolo 7C)
+  // Nunca agrega highlights semanais automaticamente — evita repetição e perda de contexto editorial
+  const hlsMonthly = monthData.highlights_monthly;
+  const execHlHtml = (hlsMonthly && hlsMonthly.length) ? `
     <div class="exec-section-label">Destaques do mês</div>
     <div class="mo-exec-hl-list">
-      ${sortedHl.map(h=>{
+      ${hlsMonthly.map(h=>{
         const isResult=h.type==='result';
         const isRisk=h.type==='risk';
         const icon=isResult?'📈':isRisk?'⚠️':'◆';
@@ -2600,12 +2602,14 @@ function renderMonth(yr,mk,mn){
           <div class="mo-exec-hl-body">
             <div class="mo-exec-hl-title">${esc(h.title||h)}</div>
             ${h.desc?`<div class="mo-exec-hl-desc">${esc(h.desc)}</div>`:''}
-            ${h.weekLabel?`<span class="mo-exec-hl-week">${esc(h.weekLabel)}</span>`:''}
           </div>
         </div>`;
       }).join('')}
-    </div>` : `<div class="exec-section-label">Destaques do mês</div>
-    <div style="padding:14px 0;font-size:13px;color:var(--text-secondary)">Nenhum destaque registrado para este mês.</div>`;
+    </div>`
+  : `<div class="exec-section-label">Destaques do mês</div>
+    <div class="card" style="padding:14px 16px;margin-bottom:16px;border:1px dashed var(--border)">
+      <div style="font-size:13px;color:var(--text-secondary);line-height:1.5">Resumo mensal ainda não gerado — acione o Protocolo 7C ("fecha o mês de ${mn}") para gerar.</div>
+    </div>`;
 
   // 4. Card consolidado de iniciativas executivas
   const healthCls=st=>st==='on_track'?'st-ok':st==='at_risk'?'st-warn':st==='off_track'?'st-bad':'st-null';
@@ -2621,15 +2625,14 @@ function renderMonth(yr,mk,mn){
         const hc=healthCls(u.status); const hl=healthLabel(u.status);
         const dot=healthDot(u.status); const bg=healthBg(u.status); const txt=healthTxt(u.status);
         const border = i>0 ? 'border-top:0.5px solid var(--border);' : '';
-        return`<div style="${border}padding:13px 16px;display:flex;gap:12px;align-items:flex-start">
+        return`<div style="${border}padding:13px 16px;display:flex;gap:12px;align-items:center">
           <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
               <span style="font-size:13px;font-weight:600;color:var(--text-primary)">${esc(u.project)}</span>
               ${u.projectStatus?`<span style="font-size:10px;font-weight:500;color:var(--text-secondary);background:var(--bg-secondary);border-radius:6px;padding:1px 7px;border:0.5px solid var(--border)">${esc(u.projectStatus)}</span>`:''}
             </div>
-            <div style="font-size:12.5px;color:var(--text-secondary);line-height:1.55">${esc(u.body)}</div>
           </div>
-          <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px;padding-top:2px">
+          <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px">
             <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:${bg};color:${txt}">
               <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="${dot}"/></svg>${esc(hl)}
             </span>
@@ -2637,26 +2640,36 @@ function renderMonth(yr,mk,mn){
           </div>
         </div>`;
       }).join('')}
+      <div style="padding:8px 16px;border-top:0.5px solid var(--border);background:var(--bg-secondary)">
+        <span style="font-size:10.5px;color:var(--text-secondary)">Snapshot — detalhes do andamento disponíveis na semana de referência</span>
+      </div>
     </div>` : '';
 
-  // 5. Alertas e atenções
-  const alertsHtml = allAlerts.length ? `
+  // 5. Alertas e atenções — usa alerts_monthly (gerado via Protocolo 7C)
+  // Ausente enquanto o fechamento mensal não for acionado
+  const alertsMonthly = monthData.alerts_monthly;
+  const alertsHtml = (alertsMonthly && alertsMonthly.length) ? `
     <div class="exec-section-label">Alertas e pontos de atenção</div>
     <div class="mo-alert-list">
-      ${allAlerts.map(a=>`<div class="mo-alert-item">
+      ${alertsMonthly.map(a=>`<div class="mo-alert-item">
         <div class="mo-alert-icon">⚠️</div>
         <div class="mo-alert-body">
           <div class="mo-alert-title">${esc(a.title||a)}</div>
           ${a.desc?`<div class="mo-alert-desc">${esc(a.desc)}</div>`:''}
-          ${a.weekLabel?`<div class="mo-alert-week">${esc(a.weekLabel)}</div>`:''}
         </div>
       </div>`).join('')}
     </div>` : '';
 
   // 6. Volume do mês — métricas sumário
+  // Iniciativas executivas ativas = label executivo + status Em andamento ou Discovery
+  const execActiveCount = execPU.filter(u => {
+    const st = (u.projectStatus||'').toLowerCase().trim();
+    return st === 'em andamento' || st === 'discovery';
+  }).length;
+
   const moSummaryHtml = `
     <div class="exec-section-label">Volume do mês</div>
-    <div class="mo-kpi-grid" style="max-width:480px">
+    <div class="mo-kpi-grid" style="grid-template-columns:repeat(4,1fr);align-items:start">
       <div class="mo-kpi">
         <div class="mo-kpi-label">Semanas</div>
         <div class="mo-kpi-value">${ws.length}</div>
@@ -2669,9 +2682,37 @@ function renderMonth(yr,mk,mn){
         <div class="mo-kpi-label">Iniciativas acompanhadas</div>
         <div class="mo-kpi-value">${allPU.length}</div>
       </div>
+      <div class="mo-kpi">
+        <div class="mo-kpi-label">Iniciativas executivas</div>
+        <div class="mo-kpi-value">${execActiveCount}</div>
+      </div>
     </div>`;
 
-  const execPanel = moSummaryHtml + execInitiativesHtml + moKpiHtml + execHlHtml + alertsHtml + execKrSection;
+  // 7. Gráfico de evolução dos indicadores — semana a semana no mês
+  // Só exibe se houver ≥ 2 semanas com dados
+  const weeksChrono = ws.slice().sort((a,b)=>a.id.localeCompare(b.id)); // mais antiga → mais recente
+  const moChartLabels = weeksChrono.map(w=>w.label);
+  const moChartDatasets = [];
+  if(weeksChrono.length >= 2 && baseInds.length){
+    baseInds.forEach(ind=>{
+      const data = weeksChrono.map(w=>{
+        const found=(w.indicators||[]).find(i=>i.label===ind.label);
+        if(!found||found.value==='—') return null;
+        const v=parsePtBR(found.value);
+        return isNaN(v)?null:v;
+      });
+      if(data.filter(v=>v!==null).length>=1) moChartDatasets.push({label:ind.label,data});
+    });
+  }
+
+  const moIndChartHtml = moChartDatasets.length && weeksChrono.length>=2 ? `
+    <div class="exec-section-label" style="margin-top:8px">Evolução dos indicadores no mês</div>
+    <div class="card" style="padding:16px;margin-bottom:20px">
+      <div id="filters-mo-ind-chart" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="mo-ind-chart"></canvas></div>
+    </div>` : '';
+
+  const execPanel = moSummaryHtml + execInitiativesHtml + moKpiHtml + moIndChartHtml + execHlHtml + alertsHtml + execKrSection;
 
   // ─────────────────────────────────────────
   // PAINEL RELEASE NOTES
@@ -2742,6 +2783,11 @@ function renderMonth(yr,mk,mn){
     headerHtml +
     `<div class="mo-panel" id="mop-exec" style="display:${t==='exec'?'block':'none'}">${execPanel}</div>` +
     `<div class="mo-panel" id="mop-rn"   style="display:${t==='rn'?'block':'none'}">${rnPanel}</div>`;
+
+  // Inicializar gráfico de indicadores após innerHTML (canvas já está no DOM)
+  if(moChartDatasets.length && weeksChrono.length>=2){
+    buildChart('mo-ind-chart', moChartDatasets, moChartLabels);
+  }
 }
 
 // ── Toggle semanal no consolidado ─────────────────────────────
@@ -3296,90 +3342,24 @@ function renderWeek(w){
     <div id="we-export-anchor"></div>
 `;
 }
+
+// ── saveData — persiste DATA no Supabase ──────────────────────
+// _sb é declarado no segundo bloco de script mas só chamado
+// via interação do usuário, então o símbolo já está definido.
+async function saveData(){
+  try {
+    const { error } = await _sb
+      .from('release_notes_data')
+      .upsert(
+        { id: 'main', data: DATA, updated_at: new Date().toISOString() },
+        { onConflict: 'id' }
+      );
+    if(error) console.error('saveData error:', error);
+  } catch(e) {
+    console.error('saveData exception:', e);
+  }
+}
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const _SB_URL = 'https://ddspskifskoqznemxuuu.supabase.co';
-const _SB_KEY = 'sb_publishable_zY82pfmfz7OuD-RjLrEngA_cUzm7bVH';
-const _sb = supabase.createClient(_SB_URL, _SB_KEY);
-
-async function loadReleaseNotesData(){
-  try {
-    const res = await _sb.from('release_notes_data').select('data').eq('id','main').single();
-    if(res.error) throw res.error;
-    window.DATA = res.data.data;
-    DATA = res.data.data;
-    Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
-    setColor(team); buildSB(); renderHome();
-  } catch(err) {
-    console.error('Erro ao carregar dados do Supabase:', err);
-    try {
-      const localRes = await fetch('./release-notes-data.json');
-      if(!localRes.ok) throw new Error('JSON local indisponivel');
-      const text = await localRes.text();
-      if(!text || text.trim().length === 0) throw new Error('JSON local vazio');
-      const localData = JSON.parse(text);
-      if(!localData || Object.keys(localData).length === 0) throw new Error('JSON local sem dados');
-      window.DATA = localData;
-      DATA = localData;
-      Object.keys(DATA).forEach(t=>{ rmDep[t]="all"; initRmOpen(t); });
-      setColor(team); buildSB(); renderHome();
-    } catch(fallbackErr) {
-      console.error('Fallback local tambem falhou:', fallbackErr);
-      document.body.innerHTML = '<p style="color:red;padding:2rem">Erro ao carregar dados. Verifique o console.</p>';
-    }
-  }
-}
-
-// Definida de forma síncrona — sempre disponível ao click independente de timing
-window.pwCheck = async function(){
-  const email = document.getElementById('pw-email').value.trim();
-  const password = document.getElementById('pw-input').value;
-  const btn = document.getElementById('pw-btn');
-  btn.disabled = true;
-  btn.textContent = 'Entrando...';
-
-  const { data, error } = await _sb.auth.signInWithPassword({ email, password });
-
-  if(error){
-    document.getElementById('pw-err').style.display = 'block';
-    document.getElementById('pw-input').value = '';
-    document.getElementById('pw-input').focus();
-    btn.disabled = false;
-    btn.textContent = 'Entrar';
-    return;
-  }
-
-  await _sb.from('audit_log').insert({
-    user_email: email,
-    dashboard: 'release-notes',
-    action: 'login'
-  });
-
-  document.getElementById('pw-gate').style.display = 'none';
-  loadReleaseNotesData();
-};
-
-// Verifica sessão existente ao carregar a página
-(async function(){
-  try {
-    const { data: { session } } = await _sb.auth.getSession();
-    if(session){
-      document.getElementById('pw-gate').style.display = 'none';
-      loadReleaseNotesData();
-    } else {
-      const inp = document.getElementById('pw-email');
-      if(inp) inp.focus();
-    }
-  } catch(e) {
-    console.warn('Erro ao verificar sessão:', e);
-  }
-})();
-
-async function logout(){
-  await _sb.auth.signOut();
-  location.reload();
-}
-</script>
-<!-- ── /SUPABASE AUTH GATE ── -->
