@@ -3363,3 +3363,111 @@ async function saveData(){
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ── SUPABASE CLIENT ──────────────────────────────────────────
+const SUPABASE_URL  = 'https://uakozrqrztgrgwoywxkx.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha296cnFyenRncmd3b3l3eGt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMwMDQzNzIsImV4cCI6MjA1ODU4MDM3Mn0.orFwCBkv_udgHOf4KBwmvWWlphKj5VLCO0OIVK7Fk6I';
+const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── AUTH GATE ────────────────────────────────────────────────
+async function pwCheck() {
+  const email    = (document.getElementById('pw-email')?.value  || '').trim();
+  const password = (document.getElementById('pw-input')?.value  || '').trim();
+  const errEl    = document.getElementById('pw-err');
+  const btn      = document.getElementById('pw-btn');
+
+  if (!email || !password) {
+    if (errEl) { errEl.textContent = 'Preencha e-mail e senha.'; errEl.style.display = 'block'; }
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Entrando…'; }
+  if (errEl) errEl.style.display = 'none';
+
+  try {
+    const { data, error } = await _sb.auth.signInWithPassword({ email, password });
+
+    if (error || !data?.session) {
+      if (errEl) { errEl.textContent = 'E-mail ou senha incorretos.'; errEl.style.display = 'block'; }
+      if (btn)   { btn.disabled = false; btn.textContent = 'Entrar'; }
+      return;
+    }
+
+    // Login OK — carrega dados e abre o dashboard
+    await loadData();
+    document.getElementById('pw-gate').style.display = 'none';
+    init();
+
+  } catch (e) {
+    console.error('pwCheck error:', e);
+    if (errEl) { errEl.textContent = 'Erro inesperado. Tente novamente.'; errEl.style.display = 'block'; }
+    if (btn)   { btn.disabled = false; btn.textContent = 'Entrar'; }
+  }
+}
+
+async function logout() {
+  await _sb.auth.signOut();
+  location.reload();
+}
+
+// ── DATA LOADER ──────────────────────────────────────────────
+async function loadData() {
+  // 1. Tenta buscar do Supabase
+  try {
+    const { data, error } = await _sb
+      .from('release_notes_data')
+      .select('data')
+      .eq('id', 'main')
+      .single();
+
+    if (!error && data?.data) {
+      window.DATA = data.data;
+      return;
+    }
+  } catch (e) {
+    console.warn('Supabase loadData falhou, usando fallback:', e);
+  }
+
+  // 2. Fallback: tenta carregar release-notes-data.json local
+  try {
+    const res = await fetch('release-notes-data.json');
+    if (res.ok) {
+      const json = await res.json();
+      window.DATA = json;
+      return;
+    }
+  } catch (e) {
+    console.warn('Fallback JSON falhou:', e);
+  }
+
+  // 3. Fallback: usa DATA embutido no data-block (se disponível)
+  if (typeof DATA === 'undefined') {
+    console.error('Nenhuma fonte de dados disponível.');
+  }
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+function init() {
+  // Define time padrão e renderiza
+  team = 'vida';
+  setColor(team);
+  document.querySelectorAll('.tbtn').forEach(b => b.classList.toggle('on', b.dataset.t === team));
+  buildSB();
+  renderHome();
+}
+
+// ── STARTUP ──────────────────────────────────────────────────
+// Verifica se já existe sessão ativa ao carregar a página
+(async () => {
+  const { data: { session } } = await _sb.auth.getSession();
+
+  if (session) {
+    // Já autenticado — carrega dados diretamente
+    await loadData();
+    document.getElementById('pw-gate').style.display = 'none';
+    init();
+  }
+  // Caso contrário, o gate de login permanece visível aguardando pwCheck()
+})();
+</script>
+</body>
+</html>
