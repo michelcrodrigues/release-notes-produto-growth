@@ -1435,6 +1435,14 @@ function filterInds(inds, t){
   return (inds||[]).filter(i => !VIDA_IND_EXCLUDE.includes((i.label||'').toLowerCase().trim()));
 }
 
+// Helper global de parsing de valor PT-BR → número
+// Reutilizado em renderMonth (local) e renderYear (global)
+function parsePtBRNum(str){
+  if(!str||str==='—') return NaN;
+  const clean = str.replace(/\./g,'').replace(',','.').replace(/[%x×pp\s]/gi,'');
+  return parseFloat(clean);
+}
+
 var team="exp"; var sel=null;
 var rmDep={exp:"all",vida:"all",cx:"all"};
 let rmOpen={};
@@ -2457,13 +2465,59 @@ function renderYear(yr){
       <span style="color:var(--text-secondary);font-size:16px">›</span>
     </div>`;
   }).join('');
+
+  // ── Gráfico anual: evolução mensal dos indicadores ──────────
+  // Meses em ordem cronológica (mais antigo → mais recente)
+  const monthsChrono = Object.keys(td[yr]).sort((a,b)=>parseInt(a)-parseInt(b));
+  const yrChartLabels = monthsChrono.map(mk => MONTHS[parseInt(mk)-1].substring(0,3));
+
+  // Descobrir o conjunto de indicadores a partir de qualquer mês com dados
+  const refInds = [];
+  monthsChrono.forEach(mk => {
+    const ws = (td[yr][mk].weeks||[]).slice().sort((a,b)=>b.id.localeCompare(a.id));
+    const lastWithData = ws.find(w=>(w.indicators||[]).some(i=>i.value!=='—'))||ws[0];
+    if(lastWithData){
+      filterInds(lastWithData.indicators||[], team).forEach(ind => {
+        if(!refInds.find(r=>r.label===ind.label)) refInds.push(ind);
+      });
+    }
+  });
+
+  // Para cada indicador, valor = última semana com dado real naquele mês
+  const yrChartDatasets = [];
+  refInds.forEach(refInd => {
+    const data = monthsChrono.map(mk => {
+      const ws = (td[yr][mk].weeks||[]).slice().sort((a,b)=>b.id.localeCompare(a.id));
+      const lastWithData = ws.find(w=>(w.indicators||[]).some(i=>i.label===refInd.label && i.value!=='—'));
+      if(!lastWithData) return null;
+      const found = (lastWithData.indicators||[]).find(i=>i.label===refInd.label);
+      if(!found||found.value==='—') return null;
+      const v = parsePtBRNum(found.value);
+      return isNaN(v) ? null : v;
+    });
+    if(data.filter(v=>v!==null).length >= 1) yrChartDatasets.push({label:refInd.label, data});
+  });
+
+  const yrIndChartHtml = yrChartDatasets.length && monthsChrono.length >= 2 ? `
+    <div class="exec-section-label" style="margin-top:8px">Evolução dos indicadores no ano</div>
+    <div class="card" style="padding:16px;margin-bottom:20px">
+      <div id="filters-yr-ind-chart" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="yr-ind-chart"></canvas></div>
+    </div>` : '';
+
   document.getElementById("main").innerHTML=`
     <div class="hh">
       <div class="header-date" style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">Release Notes · ${esc(DATA[team].meta.name)}</div>
       <div class="htitle">${yr}</div>
     </div>
     <div class="stitle">Meses</div>${rows}
-    ${buildKrEvolution(DATA[team].meta)}`;
+    ${buildKrEvolution(DATA[team].meta)}
+    ${yrIndChartHtml}`;
+
+  // Inicializar gráfico após innerHTML (canvas já está no DOM)
+  if(yrChartDatasets.length && monthsChrono.length >= 2){
+    buildChart('yr-ind-chart', yrChartDatasets, yrChartLabels);
+  }
 }
 
 // ── renderMonth — VISÃO CONSOLIDADA ──────────────────────────
