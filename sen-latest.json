@@ -1,232 +1,53 @@
 {
-  "semana": "2026-06-07",
+  "semana": "2026-06-14",
   "deliveries": [
     {
-      "id": "SEN-379",
-      "title": "Site — Rodapé renderizado server-side para indexação imediata pelos buscadores",
+      "id": "SEN-414",
+      "title": "Correção de bug no filtro das páginas de destino",
+      "description": "Filtro de páginas de destino no site restaurado — navegação por destino funcionando corretamente.",
+      "labels": [
+        "Site"
+      ]
+    },
+    {
+      "id": "SEN-418",
+      "title": "Feature flag para chave pública do Mercado Pago no Site",
+      "description": "Integração do Mercado Pago habilitada via feature flag no site — rollout controlado da nova forma de pagamento.",
+      "labels": [
+        "Site",
+        "Pagamento"
+      ]
+    },
+    {
+      "id": "SEN-376",
+      "title": "Dados estruturados SEO nas páginas de destino",
+      "description": "Schema markup adicionado nas páginas de destino — melhora elegibilidade para rich results e tráfego orgânico.",
       "labels": [
         "Site",
         "SEO"
       ],
-      "project": "Implementação SEO",
-      "description": "Footer do site migrado para SSR: conteúdo de links e informações institucionais agora está disponível para crawlers no primeiro carregamento, sem depender de JavaScript do cliente."
+      "project": "Implementação SEO"
     },
     {
-      "id": "SEN-356",
-      "title": "Totem — Correção de trava no fluxo Pix que bloqueava o usuário na tela de pagamento",
-      "labels": [
-        "Totem",
-        "Bug"
-      ],
-      "description": "Bug crítico no totem corrigido: usuários que escolhiam Pix não ficam mais presos na tela de pagamento — fluxo segue normalmente até a confirmação."
-    },
-    {
-      "id": "SEN-353",
-      "title": "Totem — Erros de confirmação de reserva tratados com mensagens adequadas",
-      "labels": [
-        "Totem"
-      ],
-      "description": "Casos de falha na confirmação de reserva passam a exibir mensagem explicativa ao invés de tela em branco — reduz abandono por falta de feedback no totem."
-    },
-    {
-      "id": "SEN-361",
-      "title": "Site/App — Validação de disponibilidade de assento reforçada antes do checkout",
+      "id": "SEN-421",
+      "title": "Campo redesign_checkout adicionado ao evento de login",
+      "description": "Tracking de variante do A/B de checkout implementado — habilita análise de impacto de conversão por grupo de teste.",
       "labels": [
         "Site",
-        "App"
+        "Checkout",
+        "Analytics"
       ],
-      "description": "Checagem de disponibilidade de assento adicionada no fluxo de compra — evita que o usuário avance para o pagamento com assento já ocupado."
-    },
-    {
-      "id": "SEN-359",
-      "title": "Site/App — Redirecionamento automático para busca quando não há mais assentos",
-      "labels": [
-        "Site",
-        "App"
-      ],
-      "description": "Quando todos os assentos de uma viagem são ocupados durante a compra, o usuário é redirecionado automaticamente para a busca com os critérios anteriores — reduz abandono por dead-end."
-    },
-    {
-      "id": "SEN-352",
-      "title": "Site — Invalidação automática de cache do CMS ao atualizar homes de viações",
-      "labels": [
-        "Site",
-        "Infra"
-      ],
-      "description": "Cache do CMS agora é invalidado via Rabbit automaticamente quando uma home de viação é atualizada — conteúdo SEO publicado refletido no site sem intervenção manual."
-    },
-    {
-      "id": "SEN-381",
-      "title": "Site — Novo layout da tela de pagamento no checkout (A/B ativo em 20% da base)",
-      "labels": [
-        "Site",
-        "Conversão"
-      ],
-      "project": "Redesign de checkout",
-      "description": "Redesign visual da tela de pagamento entregue e em teste A/B: componentes reposicionados para reduzir fricção. Rastreamento via evento purchase com campo redesign_checkout habilitado."
-    },
-    {
-      "id": "SEN-383",
-      "title": "Site — Novo layout da tela de dados de passageiro/comprador no checkout (A/B ativo)",
-      "labels": [
-        "Site",
-        "Conversão"
-      ],
-      "project": "Redesign de checkout",
-      "description": "Telas de preenchimento de dados unificadas em único fluxo accordion com rollout inicial em 20% da base — rastreamento A/B ativo via GA para medir impacto em conversão."
-    },
-    {
-      "id": "SEN-386",
-      "title": "Totem — Payload integrado ao totem habilitando conteúdo dinâmico na home",
-      "labels": [
-        "Totem",
-        "Conversão"
-      ],
-      "project": "Construção de vitrine para o totem",
-      "description": "Primeira integração do CMS no totem: home agora consome conteúdo via Payload, criando a base técnica para a vitrine de ofertas e geração de demanda no ponto de venda físico."
-    },
-    {
-      "id": "SEN-398",
-      "title": "Site — Duplo clique no Pix não gera mais requisição duplicada de venda",
-      "labels": [
-        "Site",
-        "Bug"
-      ],
-      "description": "Correção de bug que permitia múltiplos disparos de postSale antes do redirect: botão mantido desabilitado até a navegação ou erro — reduz 406s e melhora experiência no pagamento."
-    },
-    {
-      "id": "SEN-149",
-      "title": "App — Atalhos de datas rápidas na busca (Hoje, Amanhã, Sábado)",
-      "labels": [
-        "App",
-        "Conversão"
-      ],
-      "project": "Estabilização de conversão geral",
-      "description": "Usuário seleciona datas comuns com um toque no calendário de busca — reduz atrito na etapa inicial do fluxo de compra e aumenta velocidade de conversão no app."
-    },
-    {
-      "id": "SEN-234",
-      "title": "App — Data de nascimento preenchida via datepicker no checkout",
-      "labels": [
-        "App",
-        "Conversão"
-      ],
-      "description": "Campo de data de nascimento substituído por seletor nativo — elimina erros de digitação e reduz fricção no preenchimento de dados de passageiro no app."
-    },
-    {
-      "id": "SEN-363",
-      "title": "App — Lista de documentos de passageiro simplificada para CPF e RG",
-      "labels": [
-        "App"
-      ],
-      "description": "CNH e \"Outro\" removidos das opções de documento de passageiro no app — alinha com site e operação, centraliza CPF como documento padrão e reduz complexidade no checkout."
-    },
-    {
-      "id": "SEN-377",
-      "title": "Site — Heading H1 das páginas de rota otimizado para SEO (\"Passagem de ônibus de X para Y\")",
-      "labels": [
-        "Site",
-        "SEO"
-      ],
-      "project": "Implementação SEO",
-      "description": "Título principal das páginas de rota atualizado para intenção de busca comercial e injetado via SSR — melhora indexação para buscas por rotas específicas."
-    },
-    {
-      "id": "SEN-378",
-      "title": "Site — Heading H1 das páginas de destino otimizado para SEO (\"Passagem de ônibus para X\")",
-      "labels": [
-        "Site",
-        "SEO"
-      ],
-      "project": "Implementação SEO",
-      "description": "Heading principal das páginas de destino atualizado com palavra-chave de alta intenção e publicado via metadata SSR — melhora ranking para buscas genéricas por destino."
-    },
-    {
-      "id": "SEN-387",
-      "title": "App — Carregamento infinito no visualizador de PDF do bilhete corrigido",
-      "labels": [
-        "App"
-      ],
-      "description": "Bug crítico resolvido: visualizador de PDF na tela de detalhes do bilhete não trava mais em carregamento infinito — acesso ao comprovante de compra funciona normalmente no app."
-    },
-    {
-      "id": "SEN-364",
-      "title": "Site — Bloco textual SEO estruturado na home para busca semântica e AEO",
-      "labels": [
-        "Site",
-        "SEO"
-      ],
-      "project": "Implementação SEO",
-      "description": "Conteúdo denso com H2/H3 e termos de alta relevância (passagens baratas, frotas modernas, horários regulares) adicionado ao rodapé da home — aumenta sinal orgânico para motores de busca e LLMs."
-    },
-    {
-      "id": "SEN-365",
-      "title": "Site — Bloco SEO da home editável via Payload CMS pelo time de marketing",
-      "labels": [
-        "Site",
-        "SEO"
-      ],
-      "project": "Implementação SEO",
-      "description": "Conteúdo do bloco textual SEO agora gerenciável pelo time de conteúdo via Payload — atualização de copy sem necessidade de deploy técnico."
-    },
-    {
-      "id": "SEN-366",
-      "title": "Site — Integração CMS/BFF para servir o bloco textual SEO da home",
-      "labels": [
-        "Site",
-        "SEO"
-      ],
-      "project": "Implementação SEO",
-      "description": "Camada de integração entre CMS e BFF implementada para o bloco SEO — pipeline de dados do Payload até o front concluído."
-    },
-    {
-      "id": "SEN-367",
-      "title": "Site — Integração Payload/CMS para entrega do conteúdo SEO na home",
-      "labels": [
-        "Site",
-        "SEO"
-      ],
-      "project": "Implementação SEO",
-      "description": "Integração do Payload com o CMS finalizada para o bloco SEO — última peça da cadeia técnica que entrega conteúdo otimizado na home."
-    },
-    {
-      "id": "SEN-401",
-      "title": "Site — Viva Fidelidade com destaque no cabeçalho do site",
-      "labels": [
-        "Site",
-        "Receita"
-      ],
-      "project": "Unificar login e frente de cadastros do Viva Fidelidade",
-      "description": "Novo componente no header direciona o usuário para o programa de fidelidade em 100% das sessões do site — aumenta visibilidade do Viva Fidelidade e oportunidade de captação de membros."
-    },
-    {
-      "id": "SEN-402",
-      "title": "Site — Preço \"De\" ocultado quando inferior ao \"Por\" nos resultados de busca",
-      "labels": [
-        "Site",
-        "Conversão"
-      ],
-      "project": "Estabilização de conversão geral",
-      "description": "Correção de bug visual em rotas específicas onde o preço original aparecia abaixo do preço atual — elimina confusão de pricing na listagem de resultados."
+      "project": "Redesign de checkout"
     }
   ],
   "highlights": [
     {
-      "desc": "Primeira versão das telas liberada para testes — progresso saltou de 25% para 41% na semana. Plano de rollout em construção.",
-      "title": "Redesign de checkout avança para testes no site"
+      "title": "SEO em fase final: 94% concluído com dados estruturados nas páginas de destino",
+      "desc": "Schema markup deployado nas páginas de destino e proxy reverso do blog definido — última milha do projeto de SEO em execução."
     },
     {
-      "desc": "Resolvidos: trava no fluxo de Pix antes da geração do QR Code e erros de confirmação de reserva da Smart API — ambos causavam abandono silencioso no checkout.",
-      "title": "Dois bugs críticos no totem corrigidos"
-    },
-    {
-      "desc": "Análise completa das variações de conversão documentada e compartilhada. Base para priorização de ações de CRO nas próximas semanas.",
-      "title": "Diagnóstico de conversão entregue"
-    },
-    {
-      "desc": "Dezenas de links internos no rodapé passam a ser entregues no HTML inicial, acelerando rastreamento e indexação por buscadores.",
-      "type": "result",
-      "title": "SEO: rodapé do site agora renderizado server-side"
+      "title": "Tracking de A/B de checkout implementado",
+      "desc": "Campo redesign_checkout adicionado ao evento de login — análise de impacto de conversão por variante agora possível."
     }
   ],
   "alerts": []
