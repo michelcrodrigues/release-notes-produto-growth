@@ -1,54 +1,6 @@
 {
-  "semana": "2026-06-14",
-  "deliveries": [
-    {
-      "id": "SEN-414",
-      "title": "Correção de bug no filtro das páginas de destino",
-      "description": "Filtro de páginas de destino no site restaurado — navegação por destino funcionando corretamente.",
-      "labels": [
-        "Site"
-      ]
-    },
-    {
-      "id": "SEN-418",
-      "title": "Feature flag para chave pública do Mercado Pago no Site",
-      "description": "Integração do Mercado Pago habilitada via feature flag no site — rollout controlado da nova forma de pagamento.",
-      "labels": [
-        "Site",
-        "Pagamento"
-      ]
-    },
-    {
-      "id": "SEN-376",
-      "title": "Dados estruturados SEO nas páginas de destino",
-      "description": "Schema markup adicionado nas páginas de destino — melhora elegibilidade para rich results e tráfego orgânico.",
-      "labels": [
-        "Site",
-        "SEO"
-      ],
-      "project": "Implementação SEO"
-    },
-    {
-      "id": "SEN-421",
-      "title": "Campo redesign_checkout adicionado ao evento de login",
-      "description": "Tracking de variante do A/B de checkout implementado — habilita análise de impacto de conversão por grupo de teste.",
-      "labels": [
-        "Site",
-        "Checkout",
-        "Analytics"
-      ],
-      "project": "Redesign de checkout"
-    }
-  ],
-  "highlights": [
-    {
-      "title": "SEO em fase final: 94% concluído com dados estruturados nas páginas de destino",
-      "desc": "Schema markup deployado nas páginas de destino e proxy reverso do blog definido — última milha do projeto de SEO em execução."
-    },
-    {
-      "title": "Tracking de A/B de checkout implementado",
-      "desc": "Campo redesign_checkout adicionado ao evento de login — análise de impacto de conversão por variante agora possível."
-    }
-  ],
+  "semana": "2026-06-21",
+  "deliveries": [],
+  "highlights": [],
   "alerts": []
 }
