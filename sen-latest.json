@@ -1,6 +1,203 @@
 {
   "semana": "2026-07-05",
-  "deliveries": [],
-  "highlights": [],
-  "alerts": []
+  "deliveries": [
+    {
+      "id": "SEN-466",
+      "title": "Componentes de landing page construÃ­dos no Payload â marketing publica LPs sem dev",
+      "labels": [
+        "Web",
+        "Conversion rate"
+      ],
+      "project": "ImplementaÃ§Ã£o SEO",
+      "description": "Time de conteÃºdo cria e edita landing pages de marketing de forma autÃ´noma, sem dependÃªncia tÃ©cnica."
+    },
+    {
+      "id": "SEN-368",
+      "title": "SeÃ§Ã£o de download do app na home otimizada para SEO",
+      "labels": [
+        "Web",
+        "SEO"
+      ],
+      "project": "ImplementaÃ§Ã£o SEO",
+      "description": "Melhora de indexaÃ§Ã£o da home com otimizaÃ§Ã£o da seÃ§Ã£o do app: conteÃºdo gerenciÃ¡vel via CMS."
+    },
+    {
+      "id": "SEN-497",
+      "title": "SeÃ§Ã£o de download do app integrada ao Payload â conteÃºdo editÃ¡vel via CMS",
+      "labels": [
+        "Web",
+        "SEO"
+      ],
+      "project": "ImplementaÃ§Ã£o SEO",
+      "description": "ConteÃºdo da seÃ§Ã£o de download do app editÃ¡vel no Payload â etapa intermediÃ¡ria da cadeia editorial."
+    },
+    {
+      "id": "SEN-498",
+      "title": "ConteÃºdo da seÃ§Ã£o de download integrado do Payload ao CMS",
+      "labels": [
+        "Web",
+        "SEO"
+      ],
+      "project": "ImplementaÃ§Ã£o SEO",
+      "description": "IntegraÃ§Ã£o PayloadâCMS concluÃ­da para a seÃ§Ã£o de download do app na home."
+    },
+    {
+      "id": "SEN-499",
+      "title": "IntegraÃ§Ã£o final da seÃ§Ã£o de download: CMS ao BFF â cadeia completa de SEO da home",
+      "labels": [
+        "Web",
+        "SEO"
+      ],
+      "project": "ImplementaÃ§Ã£o SEO",
+      "description": "Dados editoriais da seÃ§Ã£o de download chegam ao front-end de ponta a ponta."
+    },
+    {
+      "id": "SEN-486",
+      "title": "Componente de header-bar criado no site â mensagens globais habilitadas",
+      "labels": [
+        "Web",
+        "Conversion rate"
+      ],
+      "description": "Nova capacidade editorial: barra de cabeÃ§alho suporta mensagens e alertas gerenciÃ¡veis pelo time."
+    },
+    {
+      "id": "SEN-487",
+      "title": "Header-bar integrada do Payload ao CMS",
+      "labels": [
+        "Web",
+        "Conversion rate"
+      ],
+      "description": "Dados da header-bar fluem do Payload para o CMS â etapa intermediÃ¡ria da cadeia editorial."
+    },
+    {
+      "id": "SEN-489",
+      "title": "Header-bar integrada do CMS ao BFF â conteÃºdo editorial chega ao front-end",
+      "labels": [
+        "Web",
+        "Conversion rate"
+      ],
+      "description": "ConteÃºdo da header-bar publicado no CMS aparece no site automaticamente."
+    },
+    {
+      "id": "SEN-485",
+      "title": "Header-bar habilitada para gestÃ£o via Payload â sem deploy para publicar",
+      "labels": [
+        "Web",
+        "Conversion rate"
+      ],
+      "description": "Time de marketing ativa mensagens globais no site diretamente via Payload, sem envolvimento tÃ©cnico."
+    },
+    {
+      "id": "SEN-305",
+      "title": "Estrutura e componentes da home do totem redesenhados â vitrine de produtos habilitada",
+      "labels": [
+        "Totem",
+        "Conversion rate"
+      ],
+      "project": "ConstruÃ§Ã£o de vitrine para o totem",
+      "description": "Nova home do totem com estrutura de vitrine pronta: base para exibiÃ§Ã£o de rotas e promoÃ§Ãµes que geram demanda no canal."
+    },
+    {
+      "id": "SEN-494",
+      "title": "MensuraÃ§Ã£o de conversÃ£o para conexÃµes implementada no site",
+      "labels": [
+        "Web",
+        "Conversion rate"
+      ],
+      "project": "RevisÃ£o dos canais do Senna para o novo motor de conexÃµes",
+      "description": "Tracking ativo para compras de conexÃµes â baseline de dados para avaliar impacto do novo motor."
+    },
+    {
+      "id": "SEN-509",
+      "title": "Componente de incentivo a login removido da busca â menos fricÃ§Ã£o no funil",
+      "labels": [
+        "Web",
+        "Conversion rate"
+      ],
+      "project": "EstabilizaÃ§Ã£o de conversÃ£o geral",
+      "description": "Elemento que gerava atrito na busca removido, alinhado com experimento de conversÃ£o em andamento."
+    },
+    {
+      "id": "SEN-483",
+      "title": "CorreÃ§Ã£o de exibjÃ§Ã£o de destinos em conexÃµes â rota completa exibida corretamente",
+      "labels": [
+        "Bug",
+        "Web",
+        "Conversion rate"
+      ],
+      "description": "Bug que exibia destinos incorretos nos trechos de conexÃµes corrigido no checkout."
+    },
+    {
+      "id": "SEN-524",
+      "title": "Fluxo de reserva de bilhete gratuito alinhado com tratamento de erros do checkout",
+      "labels": [
+        "Bug",
+        "Web"
+      ],
+      "description": "ConsistÃªncia na jornada de gratuidade: erros de pagamento tratados de forma uniforme com o checkout padrÃ£o."
+    },
+    {
+      "id": "SEN-526",
+      "title": "CorreÃ§Ã£o de sobreposiÃ§Ã£o do banner de parceiros na home mobile com a navbar inferior",
+      "labels": [
+        "Web",
+        "Bug"
+      ],
+      "description": "ExperiÃªncia visual da home mobile restaurada â banner nÃ£o oculta mais a barra de navegaÃ§Ã£o."
+    },
+    {
+      "id": "SEN-553",
+      "title": "Dashboard de pagamentos com volume de pesquisas criado no Grafana",
+      "labels": [],
+      "description": "Visibilidade operacional do funil de pagamento em tempo real disponÃ­vel para o time."
+    },
+    {
+      "id": "SEN-554",
+      "title": "User-Agent do Senna configurado no BFF â identificaÃ§Ã£o correta nos logs",
+      "labels": [],
+      "description": "RequisiÃ§Ãµes do Senna identificadas corretamente nos logs de monitoramento e analytics."
+    },
+    {
+      "id": "SEN-555",
+      "title": "IdentificaÃ§Ã£o de requisiÃ§Ãµes BFF por User-Agent implementada â rastreabilidade melhorada",
+      "labels": [
+        "Web"
+      ],
+      "description": "DistinÃ§Ã£o entre requisiÃ§Ãµes server-side e client-side para debugging e analytics mais precisos."
+    },
+    {
+      "id": "SEN-506",
+      "title": "Pipeline CI do totem otimizado â verificaÃ§Ãµes de PR apenas em pull_requests",
+      "labels": [
+        "Totem"
+      ],
+      "description": "ReduÃ§Ã£o de builds desnecessÃ¡rias no CI, diminuindo tempo e custo de infraestrutura de desenvolvimento."
+    }
+  ],
+  "highlights": [
+    {
+      "desc": "6 entregas de SEO na semana â componentes de landing page no Payload, otimizaÃ§Ã£o da seÃ§Ã£o de download do app e proxy reverso no ar.",
+      "type": "result",
+      "title": "SEO consolida estrutura editorial: LPs gerenciÃ¡veis via CMS e otimizaÃ§Ãµes da home entregues"
+    },
+    {
+      "desc": "Componente de header-bar construÃ­do com cadeia editorial completa (Payload â CMS â BFF) â time de marketing publica mensagens globais de forma autÃ´noma.",
+      "title": "Header-bar gerenciÃ¡vel via CMS sem deploy â mensagens globais habilitadas no site"
+    },
+    {
+      "desc": "SEN-305 fechado: nova estrutura da home do totem pronta, abrindo espaÃ§o para vitrine de produtos que gera demanda no canal.",
+      "type": "result",
+      "title": "Vitrine do totem com 85% de conclusÃ£o â estrutura e componentes da home entregues"
+    },
+    {
+      "desc": "Tracking de conversÃ£o em conexÃµes ativo no site: dados necessÃ¡rios para avaliar o impacto do novo motor de conexÃµes a partir de agora.",
+      "title": "MensuraÃ§Ã£o de conversÃ£o para conexÃµes implementada â baseline habilitado para o novo motor"
+    }
+  ],
+  "alerts": [
+    {
+      "desc": "Tela de pagamento voltou para a versÃ£o anterior â preenchimento de dados de comprador e passageiro segue em testes. Retorno da nova experiÃªncia previsto em breve.",
+      "title": "Rollback da tela de pagamento no novo checkout"
+    }
+  ]
 }
