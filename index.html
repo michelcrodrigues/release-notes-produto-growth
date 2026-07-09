@@ -1491,8 +1491,8 @@ function textFg(hex){
 
 function allDl(td){
   let o=[];
-  Object.keys(td).filter(k=>k!=="meta"&&k!=="roadmap"&&k!=="demos").forEach(yr=>{
-    Object.keys(td[yr]).forEach(mk=>{
+  Object.keys(td).filter(k=>k!=="meta"&&k!=="roadmap"&&k!=="demos"&&/^\d{4}$/.test(k)).forEach(yr=>{
+    Object.keys(td[yr]).filter(mk=>/^\d+$/.test(mk)).forEach(mk=>{
       (td[yr][mk].weeks||[]).forEach(w=>{
         (w.deliveries||[]).forEach(d=>o.push({...d,weekLabel:w.label}));
       });
@@ -2074,7 +2074,7 @@ function csCards(items){
 function buildSB(){
   const sb=document.getElementById("sb"); sb.innerHTML="";
   const td=DATA[team];
-  const years=Object.keys(td).filter(k=>k!=="meta"&&k!=="roadmap"&&k!=="demos").sort((a,b)=>b-a);
+  const years=Object.keys(td).filter(k=>k!=="meta"&&k!=="roadmap"&&k!=="demos"&&/^\d{4}$/.test(k)).sort((a,b)=>b-a);
 
   // Início
   const hl=document.createElement("div");
@@ -2125,7 +2125,7 @@ function buildSB(){
     const yH=document.createElement("div"); yH.className="sy";
     yH.innerHTML=`<span>${yr}</span><span class="ar">▶</span>`;
     const yC=document.createElement("div"); yC.className="yc";
-    Object.keys(td[yr]).sort((a,b)=>b-a).forEach(mk=>{
+    Object.keys(td[yr]).filter(mk=>/^\d+$/.test(mk)).sort((a,b)=>b-a).forEach(mk=>{
       const mn=MONTHS[parseInt(mk)-1];
       const ws=td[yr][mk].weeks||[];
       const mH=document.createElement("div"); mH.className="sm";
@@ -2455,7 +2455,7 @@ function selMonth(yr,mk,mn){ sel={type:"month",yr,mk}; monthTab='exec'; renderMo
 // ── renderYear ───────────────────────────────────────────────
 function renderYear(yr){
   const td=DATA[team];
-  const months=Object.keys(td[yr]).sort((a,b)=>b-a);
+  const months=Object.keys(td[yr]).filter(mk=>/^\d+$/.test(mk)).sort((a,b)=>b-a);
   let rows=months.map(mk=>{
     const mn=MONTHS[parseInt(mk)-1];
     const ws=td[yr][mk].weeks||[];
@@ -2468,7 +2468,7 @@ function renderYear(yr){
 
   // ── Gráfico anual: evolução mensal dos indicadores ──────────
   // Meses em ordem cronológica (mais antigo → mais recente)
-  const monthsChrono = Object.keys(td[yr]).sort((a,b)=>parseInt(a)-parseInt(b));
+  const monthsChrono = Object.keys(td[yr]).filter(mk=>/^\d+$/.test(mk)).sort((a,b)=>parseInt(a)-parseInt(b));
   const yrChartLabels = monthsChrono.map(mk => MONTHS[parseInt(mk)-1].substring(0,3));
 
   // Descobrir o conjunto de indicadores a partir de qualquer mês com dados
@@ -2641,9 +2641,10 @@ function renderMonth(yr,mk,mn){
     ? `<div class="exec-section-label">Evolução dos KRs no mês</div>${krHtml}`
     : '';
 
-  // 3. Destaques executivos — usa highlights_monthly (gerado via Protocolo 7C)
-  // Nunca agrega highlights semanais automaticamente — evita repetição e perda de contexto editorial
-  const hlsMonthly = monthData.highlights_monthly;
+  // 3. Destaques executivos — usa monthly_exec.highlights (gerado pela tarefa agendada)
+  // Fallback para highlights_monthly por compatibilidade com versões antigas
+  const _me = monthData.monthly_exec || {};
+  const hlsMonthly = (_me.highlights && _me.highlights.length) ? _me.highlights : (monthData.highlights_monthly || null);
   const execHlHtml = (hlsMonthly && hlsMonthly.length) ? `
     <div class="exec-section-label">Destaques do mês</div>
     <div class="mo-exec-hl-list">
@@ -2699,9 +2700,9 @@ function renderMonth(yr,mk,mn){
       </div>
     </div>` : '';
 
-  // 5. Alertas e atenções — usa alerts_monthly (gerado via Protocolo 7C)
-  // Ausente enquanto o fechamento mensal não for acionado
-  const alertsMonthly = monthData.alerts_monthly;
+  // 5. Alertas e atenções — usa monthly_exec.alerts (gerado pela tarefa agendada)
+  // Fallback para alerts_monthly por compatibilidade com versões antigas
+  const alertsMonthly = (_me.alerts && _me.alerts.length) ? _me.alerts : (monthData.alerts_monthly || null);
   const alertsHtml = (alertsMonthly && alertsMonthly.length) ? `
     <div class="exec-section-label">Alertas e pontos de atenção</div>
     <div class="mo-alert-list">
