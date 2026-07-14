@@ -1,203 +1,102 @@
 {
-  "semana": "2026-07-05",
+  "semana": "2026-07-12",
   "deliveries": [
     {
-      "id": "SEN-466",
-      "title": "Componentes de landing page construídos no Payload — marketing publica LPs sem dev",
+      "id": "SEN-533",
+      "title": "Formulário de opt-in implementado na home do site — captação de base com consentimento legal",
       "labels": [
-        "Web",
-        "Conversion rate"
+        "Web"
       ],
-      "project": "Implementação SEO",
-      "description": "Time de conteúdo cria e edita landing pages de marketing de forma autônoma, sem dependência técnica."
+      "project": "Aumento de base comunicável",
+      "description": "Campos Nome, Email, Celular e aceite de Termos ativos na home; dados persistidos com opt-in=true e enviados para Smart e carrinhoAbandonado."
     },
     {
-      "id": "SEN-368",
-      "title": "Seção de download do app na home otimizada para SEO",
+      "id": "SEN-534",
+      "title": "Estrutura do formulário de opt-in disponibilizada no Payload — habilitação editorial sem deploy",
       "labels": [
-        "Web",
-        "SEO"
+        "Web"
       ],
-      "project": "Implementação SEO",
-      "description": "Melhora de indexação da home com otimização da seção do app: conteúdo gerenciável via CMS."
+      "project": "Aumento de base comunicável",
+      "description": "Row Section configurável via Payload para o formulário de opt-in — ativação/desativação sem envolvimento de desenvolvimento."
     },
     {
-      "id": "SEN-497",
-      "title": "Seção de download do app integrada ao Payload — conteúdo editável via CMS",
+      "id": "SEN-535",
+      "title": "Integração CMS → Payload para o formulário de opt-in concluída",
       "labels": [
-        "Web",
-        "SEO"
+        "Web"
       ],
-      "project": "Implementação SEO",
-      "description": "Conteúdo da seção de download do app editável no Payload — etapa intermediária da cadeia editorial."
+      "project": "Aumento de base comunicável",
+      "description": "Publicação no painel editorial refletida automaticamente no contrato consumido pelo site."
     },
     {
-      "id": "SEN-498",
-      "title": "Conteúdo da seção de download integrado do Payload ao CMS",
+      "id": "SEN-536",
+      "title": "Integração BFF–CMS para o formulário de opt-in implementada — configuração servida com fallback seguro",
       "labels": [
-        "Web",
-        "SEO"
+        "Web"
       ],
-      "project": "Implementação SEO",
-      "description": "Integração Payload–CMS concluída para a seção de download do app na home."
+      "project": "Aumento de base comunicável",
+      "description": "BFF consome configuração publicada pelo CMS e expõe os dados da home com tratamento de erro e resposta resiliente."
     },
     {
-      "id": "SEN-499",
-      "title": "Integração final da seção de download: CMS ao BFF — cadeia completa de SEO da home",
+      "id": "SEN-453",
+      "title": "Upgrade do Expo SDK 54 → 55 (React Native 0.83) concluído no app",
       "labels": [
-        "Web",
-        "SEO"
+        "App"
       ],
-      "project": "Implementação SEO",
-      "description": "Dados editoriais da seção de download chegam ao front-end de ponta a ponta."
+      "description": "Todas as dependências alinhadas, builds EAS validados e testes automatizados passando — base técnica do app atualizada."
     },
     {
-      "id": "SEN-486",
-      "title": "Componente de header-bar criado no site — mensagens globais habilitadas",
+      "id": "SEN-454",
+      "title": "Regressão dos fluxos críticos do app após upgrade SDK 55 validada — sem bloqueadores",
       "labels": [
-        "Web",
-        "Conversion rate"
+        "App"
       ],
-      "description": "Nova capacidade editorial: barra de cabeçalho suporta mensagens e alertas gerenciáveis pelo time."
+      "description": "Todos os fluxos críticos testados em iOS e Android (compra, pagamento, pós-compra, push, deeplinks, analytics) — go/no-go liberado para próxima fase."
     },
     {
-      "id": "SEN-487",
-      "title": "Header-bar integrada do Payload ao CMS",
+      "id": "SEN-530",
+      "title": "Campo de parcelas pré-selecionado com 1x no pagamento por cartão no site",
       "labels": [
-        "Web",
-        "Conversion rate"
-      ],
-      "description": "Dados da header-bar fluem do Payload para o CMS — etapa intermediária da cadeia editorial."
-    },
-    {
-      "id": "SEN-489",
-      "title": "Header-bar integrada do CMS ao BFF — conteúdo editorial chega ao front-end",
-      "labels": [
-        "Web",
-        "Conversion rate"
-      ],
-      "description": "Conteúdo da header-bar publicado no CMS aparece no site automaticamente."
-    },
-    {
-      "id": "SEN-485",
-      "title": "Header-bar habilitada para gestão via Payload — sem deploy para publicar",
-      "labels": [
-        "Web",
-        "Conversion rate"
-      ],
-      "description": "Time de marketing ativa mensagens globais no site diretamente via Payload, sem envolvimento técnico."
-    },
-    {
-      "id": "SEN-305",
-      "title": "Estrutura e componentes da home do totem redesenhados — vitrine de produtos habilitada",
-      "labels": [
-        "Totem",
-        "Conversion rate"
-      ],
-      "project": "Construção de vitrine para o totem",
-      "description": "Nova home do totem com estrutura de vitrine pronta: base para exibição de rotas e promoções que geram demanda no canal."
-    },
-    {
-      "id": "SEN-494",
-      "title": "Mensuração de conversão para conexões implementada no site",
-      "labels": [
-        "Web",
-        "Conversion rate"
-      ],
-      "project": "Revisão dos canais do Senna para o novo motor de conexões",
-      "description": "Tracking ativo para compras de conexões — baseline de dados para avaliar impacto do novo motor."
-    },
-    {
-      "id": "SEN-509",
-      "title": "Componente de incentivo a login removido da busca — menos fricção no funil",
-      "labels": [
-        "Web",
-        "Conversion rate"
+        "Web"
       ],
       "project": "Estabilização de conversão geral",
-      "description": "Elemento que gerava atrito na busca removido, alinhado com experimento de conversão em andamento."
+      "description": "Redução de fricção no checkout: parcela padrão já selecionada ao carregar o formulário de cartão — usuário pode alterar antes de confirmar. Ativo via Flipt (50%)."
     },
     {
-      "id": "SEN-483",
-      "title": "Correção de exibjção de destinos em conexões — rota completa exibida corretamente",
-      "labels": [
-        "Bug",
-        "Web",
-        "Conversion rate"
-      ],
-      "description": "Bug que exibia destinos incorretos nos trechos de conexões corrigido no checkout."
-    },
-    {
-      "id": "SEN-524",
-      "title": "Fluxo de reserva de bilhete gratuito alinhado com tratamento de erros do checkout",
-      "labels": [
-        "Bug",
-        "Web"
-      ],
-      "description": "Consistência na jornada de gratuidade: erros de pagamento tratados de forma uniforme com o checkout padrão."
-    },
-    {
-      "id": "SEN-526",
-      "title": "Correção de sobreposição do banner de parceiros na home mobile com a navbar inferior",
-      "labels": [
-        "Web",
-        "Bug"
-      ],
-      "description": "Experiência visual da home mobile restaurada — banner não oculta mais a barra de navegação."
-    },
-    {
-      "id": "SEN-553",
-      "title": "Dashboard de pagamentos com volume de pesquisas criado no Grafana",
+      "id": "SEN-558",
+      "title": "Cálculo do valor de cupom corrigido no app — desconto exibido com precisão na tela de pagamento",
       "labels": [],
-      "description": "Visibilidade operacional do funil de pagamento em tempo real disponível para o time."
+      "description": "Valor do cupom calculado sobre a tarifa (não tarifa + taxas) e alinhado com a resposta da API — exibição correta do desconto em compras ida+volta com cupom."
     },
     {
-      "id": "SEN-554",
-      "title": "User-Agent do Senna configurado no BFF — identificação correta nos logs",
-      "labels": [],
-      "description": "Requisições do Senna identificadas corretamente nos logs de monitoramento e analytics."
-    },
-    {
-      "id": "SEN-555",
-      "title": "Identificação de requisições BFF por User-Agent implementada — rastreabilidade melhorada",
+      "id": "SEN-495",
+      "title": "Classe de assento de cada trecho exibida individualmente nas conexões no site",
       "labels": [
         "Web"
       ],
-      "description": "Distinção entre requisições server-side e client-side para debugging e analytics mais precisos."
+      "project": "Revisão dos canais do Senna para o novo motor de conexões",
+      "description": "Passageiro visualiza a classe específica de cada trecho em viagens por conexão — requisito jurídico atendido e transparência aumentada na jornada de compra."
     },
     {
-      "id": "SEN-506",
-      "title": "Pipeline CI do totem otimizado — verificações de PR apenas em pull_requests",
+      "id": "SEN-538",
+      "title": "Listagem de destinos e origens no site corrigida — apenas rotas válidas exibidas",
       "labels": [
-        "Totem"
+        "Web"
       ],
-      "description": "Redução de builds desnecessárias no CI, diminuindo tempo e custo de infraestrutura de desenvolvimento."
+      "project": "Estabilização de conversão geral",
+      "description": "Lógica de listagem ajustada para exibir somente combinações existentes na operação — elimina páginas sem resultado e melhora confiança do usuário na busca."
     }
   ],
   "highlights": [
     {
-      "desc": "6 entregas de SEO na semana — componentes de landing page no Payload, otimização da seção de download do app e proxy reverso no ar.",
+      "desc": "Site + Payload + CMS + BFF integrados em 4 entregas: captação de base com consentimento legal ativa na home e dados enviados para Smart e carrinhoAbandonado em tempo real.",
       "type": "result",
-      "title": "SEO consolida estrutura editorial: LPs gerenciáveis via CMS e otimizações da home entregues"
+      "title": "Formulário de opt-in lançado na home do site — stack completa entregue em um ciclo"
     },
     {
-      "desc": "Componente de header-bar construído com cadeia editorial completa (Payload → CMS → BFF) — time de marketing publica mensagens globais de forma autônoma.",
-      "title": "Header-bar gerenciável via CMS sem deploy — mensagens globais habilitadas no site"
-    },
-    {
-      "desc": "SEN-305 fechado: nova estrutura da home do totem pronta, abrindo espaço para vitrine de produtos que gera demanda no canal.",
-      "type": "result",
-      "title": "Vitrine do totem com 85% de conclusão — estrutura e componentes da home entregues"
-    },
-    {
-      "desc": "Tracking de conversão em conexões ativo no site: dados necessários para avaliar o impacto do novo motor de conexões a partir de agora.",
-      "title": "Mensuração de conversão para conexões implementada — baseline habilitado para o novo motor"
+      "desc": "Upgrade de SDK (RN 0.83) concluído com todos os fluxos críticos testados em iOS e Android — base técnica atualizada e pronta para próxima fase.",
+      "title": "App modernizado com Expo SDK 55 — regressão completa validada"
     }
   ],
-  "alerts": [
-    {
-      "desc": "Tela de pagamento voltou para a versão anterior — preenchimento de dados de comprador e passageiro segue em testes. Retorno da nova experiência previsto em breve.",
-      "title": "Rollback da tela de pagamento no novo checkout"
-    }
-  ]
+  "alerts": []
 }
