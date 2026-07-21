@@ -1,101 +1,188 @@
 {
-  "semana": "2026-07-12",
+  "semana": "2026-07-19",
   "deliveries": [
     {
-      "id": "SEN-533",
-      "title": "Formulário de opt-in implementado na home do site — captação de base com consentimento legal",
+      "id": "SEN-484",
+      "title": "Upgrade de classe de assento lançado no totem",
+      "description": "Modal de incentivo para assento superior ativo no totem — mesma mecânica do site. Oferece upgrade quando há opção de classe superior no mesmo horário.",
       "labels": [
-        "Web"
+        "Totem",
+        "GMV"
       ],
-      "project": "Aumento de base comunicável",
-      "description": "Campos Nome, Email, Celular e aceite de Termos ativos na home; dados persistidos com opt-in=true e enviados para Smart e carrinhoAbandonado."
+      "project": "Revisão do projeto de design do totem"
     },
     {
-      "id": "SEN-534",
-      "title": "Estrutura do formulário de opt-in disponibilizada no Payload — habilitação editorial sem deploy",
+      "id": "SEN-557",
+      "title": "Evento de analytics implementado no momento de login do checkout no app",
+      "description": "Disparo do evento login_checkout implementado e validado no funil mobile — lacuna de dados de comportamento na etapa de identificação do comprador preenchida.",
       "labels": [
-        "Web"
+        "App",
+        "Database"
       ],
-      "project": "Aumento de base comunicável",
-      "description": "Row Section configurável via Payload para o formulário de opt-in — ativação/desativação sem envolvimento de desenvolvimento."
+      "project": "Diagnóstico e revisão de Analytics"
     },
     {
-      "id": "SEN-535",
-      "title": "Integração CMS → Payload para o formulário de opt-in concluída",
+      "id": "SEN-567",
+      "title": "Modal de confirmação de opt-in removido do app para teste de conversão",
+      "description": "Etapa de confirmação ao desmarcar comunicações eliminada — simplificação do fluxo para avaliar recuperação na taxa de opt-in.",
       "labels": [
-        "Web"
-      ],
-      "project": "Aumento de base comunicável",
-      "description": "Publicação no painel editorial refletida automaticamente no contrato consumido pelo site."
-    },
-    {
-      "id": "SEN-536",
-      "title": "Integração BFF–CMS para o formulário de opt-in implementada — configuração servida com fallback seguro",
-      "labels": [
-        "Web"
-      ],
-      "project": "Aumento de base comunicável",
-      "description": "BFF consome configuração publicada pelo CMS e expõe os dados da home com tratamento de erro e resposta resiliente."
-    },
-    {
-      "id": "SEN-453",
-      "title": "Upgrade do Expo SDK 54 → 55 (React Native 0.83) concluído no app",
-      "labels": [
+        "Conversion rate",
         "App"
       ],
-      "description": "Todas as dependências alinhadas, builds EAS validados e testes automatizados passando — base técnica do app atualizada."
+      "project": "Estabilização de conversão geral"
     },
     {
-      "id": "SEN-454",
-      "title": "Regressão dos fluxos críticos do app após upgrade SDK 55 validada — sem bloqueadores",
+      "id": "SEN-569",
+      "title": "Bug de preenchimento automático da data de volta corrigido no app",
+      "description": "Campo de data de retorno não é mais preenchido automaticamente ao selecionar a ida — comportamento correto restaurado na busca.",
+      "labels": [
+        "Bug",
+        "App",
+        "Conversion rate"
+      ],
+      "project": "Estabilização de conversão geral"
+    },
+    {
+      "id": "SEN-570",
+      "title": "Seletor de data de nascimento corrigido no checkout do app",
+      "description": "Bug que bloqueava o campo de data de nascimento em iPhones resolvido — preenchimento do checkout desbloqueado para usuários afetados.",
+      "labels": [
+        "Bug",
+        "App",
+        "Conversion rate"
+      ],
+      "project": "Estabilização de conversão geral"
+    },
+    {
+      "id": "SEN-571",
+      "title": "Renderização de topbanners corrigida no app",
+      "description": "Exibição de banners dinâmicos e estáticos agora respeita o tipo definido no payload — conteúdo editorial exibido corretamente.",
+      "labels": [
+        "App",
+        "Conversion rate"
+      ],
+      "project": "Estabilização de conversão geral"
+    },
+    {
+      "id": "SEN-566",
+      "title": "Falha de transaction_identifier em vendas do app corrigida",
+      "description": "140 de 499 erros de confirmação de reserva causados por transaction_identifier ausente resolvidos — redução imediata de 28% nas falhas de venda no app.",
+      "labels": [
+        "technical-task",
+        "App",
+        "Bug"
+      ]
+    },
+    {
+      "id": "SEN-572",
+      "title": "Falha de e-mail vazio no payload de vendas do app corrigida",
+      "description": "443 erros do tipo 'Formato de e-mail inválido' eliminados — customer_email agora enviado corretamente ao Smartbus em todos os pedidos.",
+      "labels": [
+        "technical-task",
+        "App",
+        "Bug"
+      ]
+    },
+    {
+      "id": "SEN-568",
+      "title": "Timer de expiração de reserva alinhado entre app e site",
+      "description": "UX de expiração do tempo de seleção de assento agora consistente nos dois canais — cliente informado claramente ao ultrapassar o tempo limite.",
+      "labels": [
+        "technical-task",
+        "App"
+      ]
+    },
+    {
+      "id": "SEN-600",
+      "title": "Botão de finalizar compra desabilitado enquanto formulário de cartão está incompleto",
+      "description": "Validação de formulário de crédito reforçada no app — botão permanece inativo até todos os campos obrigatórios estarem preenchidos e válidos.",
+      "labels": [
+        "technical-task",
+        "App"
+      ]
+    },
+    {
+      "id": "SEN-541",
+      "title": "Erro de confirmação de reserva 'Refaça a reserva' tratado corretamente no totem",
+      "description": "Mensagem imperativa do Smartbus reconhecida e mapeada — fluxo reiniciado automaticamente em vez de exibir erro genérico ao usuário.",
+      "labels": [
+        "Totem",
+        "Bug",
+        "technical-task"
+      ]
+    },
+    {
+      "id": "SEN-542",
+      "title": "RG vazio na criação de reserva corrigido no totem",
+      "description": "Dado de documento do passageiro não enviado em branco quando a etapa de salvamento falha — rejeição pelo Smartbus eliminada nesse cenário.",
+      "labels": [
+        "Totem",
+        "Bug",
+        "technical-task"
+      ]
+    },
+    {
+      "id": "SEN-584",
+      "title": "Atualização automática de bundle implementada no totem após deploy",
+      "description": "Dispositivos com versão desatualizada do app recarregam silenciosamente após deploy sem perda de autenticação do operador.",
+      "labels": [
+        "technical-task",
+        "Totem",
+        "Bug"
+      ]
+    },
+    {
+      "id": "SEN-449",
+      "title": "Falha de tentativas repetidas de reserva corrigida no totem quando preço muda",
+      "description": "Variação de preço entre seleção de assento e confirmação não gera mais burst de requisições duplicadas — erro reconhecido e fluxo encerrado corretamente.",
+      "labels": [
+        "Totem",
+        "Bug",
+        "technical-task"
+      ]
+    },
+    {
+      "id": "SEN-601",
+      "title": "Destinos mais procurados exibidos corretamente na busca por texto no totem",
+      "description": "Bug que ocultava destinos válidos na pesquisa manual corrigido — resultados de busca agora consistentes com o catálogo unificado de localidades.",
+      "labels": [
+        "Totem",
+        "Bug",
+        "technical-task"
+      ]
+    },
+    {
+      "id": "SEN-564",
+      "title": "Header de identificação do app implementado em chamadas ao BFF",
+      "description": "Todas as requisições do app ao backend agora enviam User-Agent padronizado — rastreabilidade de origem habilitada na infraestrutura.",
+      "labels": [
+        "technical-task",
+        "App"
+      ]
+    },
+    {
+      "id": "SEN-595",
+      "title": "Ícones padrão do app restaurados após tema Copa",
+      "description": "Tema temporário removido das plataformas iOS e Android — branding padrão validado nas duas plataformas.",
       "labels": [
         "App"
-      ],
-      "description": "Todos os fluxos críticos testados em iOS e Android (compra, pagamento, pós-compra, push, deeplinks, analytics) — go/no-go liberado para próxima fase."
-    },
-    {
-      "id": "SEN-530",
-      "title": "Campo de parcelas pré-selecionado com 1x no pagamento por cartão no site",
-      "labels": [
-        "Web"
-      ],
-      "project": "Estabilização de conversão geral",
-      "description": "Redução de fricção no checkout: parcela padrão já selecionada ao carregar o formulário de cartão — usuário pode alterar antes de confirmar. Ativo via Flipt (50%)."
-    },
-    {
-      "id": "SEN-558",
-      "title": "Cálculo do valor de cupom corrigido no app — desconto exibido com precisão na tela de pagamento",
-      "labels": [],
-      "description": "Valor do cupom calculado sobre a tarifa (não tarifa + taxas) e alinhado com a resposta da API — exibição correta do desconto em compras ida+volta com cupom."
-    },
-    {
-      "id": "SEN-495",
-      "title": "Classe de assento de cada trecho exibida individualmente nas conexões no site",
-      "labels": [
-        "Web"
-      ],
-      "project": "Revisão dos canais do Senna para o novo motor de conexões",
-      "description": "Passageiro visualiza a classe específica de cada trecho em viagens por conexão — requisito jurídico atendido e transparência aumentada na jornada de compra."
-    },
-    {
-      "id": "SEN-538",
-      "title": "Listagem de destinos e origens no site corrigida — apenas rotas válidas exibidas",
-      "labels": [
-        "Web"
-      ],
-      "project": "Estabilização de conversão geral",
-      "description": "Lógica de listagem ajustada para exibir somente combinações existentes na operação — elimina páginas sem resultado e melhora confiança do usuário na busca."
+      ]
     }
   ],
   "highlights": [
     {
-      "desc": "Site + Payload + CMS + BFF integrados em 4 entregas: captação de base com consentimento legal ativa na home e dados enviados para Smart e carrinhoAbandonado em tempo real.",
-      "type": "result",
-      "title": "Formulário de opt-in lançado na home do site — stack completa entregue em um ciclo"
+      "title": "Upgrade de assento lançado no totem — nova fonte de receita incremental ativa",
+      "desc": "Modal de incentivo para classe superior implementado no totem, seguindo o mesmo modelo do site. Abre nova alavanca de GMV sem aumento de headcount.",
+      "type": "result"
     },
     {
-      "desc": "Upgrade de SDK (RN 0.83) concluído com todos os fluxos críticos testados em iOS e Android — base técnica atualizada e pronta para próxima fase.",
-      "title": "App modernizado com Expo SDK 55 — regressão completa validada"
+      "title": "NPS de compra ativo em todos os canais digitais — projeto concluído",
+      "desc": "Site e app agora capturam satisfação pós-compra. Baseline do KR de NPS habilitado para medição.",
+      "type": "result"
+    },
+    {
+      "title": "17 correções no app e totem em um ciclo — foco em bugs de checkout e conversão",
+      "desc": "Ciclo 17 concentrou esforço em estabilização: erros de reserva (499 falhas com transaction_identifier), data de nascimento, data de volta e expiração de timer resolvidos no app; falhas de fluxo e busca no totem eliminadas."
     }
   ],
   "alerts": []
